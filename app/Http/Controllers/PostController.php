@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ImageHelper;
+use App\Models\Creator;
 use App\Models\Link;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\PostImage;
+use App\Models\Publisher;
 use App\Models\Type;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -37,7 +39,7 @@ class PostController extends Controller implements HasMiddleware
 
         $query = Post::query();
 
-        $query->with('created_by', 'updated_by', 'images', 'category', 'source_detail');
+        $query->with('created_by', 'updated_by', 'images', 'category', 'creator','publisher' ,'source_detail');
 
         if ($status) {
             $query->where('status', $status);
@@ -52,7 +54,7 @@ class PostController extends Controller implements HasMiddleware
         }
 
         $tableData = $query->paginate(perPage: 10)->onEachSide(1);
-
+        // return $tableData;
         return Inertia::render('admin/posts/Index', [
             'tableData' => $tableData,
         ]);
@@ -66,15 +68,17 @@ class PostController extends Controller implements HasMiddleware
         return Inertia::render('admin/posts/Create', [
             'links' => Link::orderBy('title')->where('status', 'active')->get(),
             'postCategories' => PostCategory::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postCreators' => Creator::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postPublishers' => Publisher::where('status', 'active')->orderBy('id', 'desc')->get(),
             'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
         ]);
     }
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'post_date' => 'required|date',
@@ -86,6 +90,8 @@ class PostController extends Controller implements HasMiddleware
             'link' => 'nullable|string|max:255',
             'source' => 'nullable|string|max:255',
             'category_code' => 'nullable|string',
+            'creator_id' => 'nullable|numeric',
+            'publisher_id' => 'nullable|numeric',
             'type' => 'nullable|string',
             'status' => 'nullable|string|in:active,inactive',
             'images' => 'nullable|array',
@@ -133,6 +139,8 @@ class PostController extends Controller implements HasMiddleware
             'links' => Link::orderBy('title')->where('status', 'active')->get(),
             'editData' => $post->load('images'),
             'postCategories' => PostCategory::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postCreators' => Creator::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postPublishers' => Publisher::where('status', 'active')->orderBy('id', 'desc')->get(),
             'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
             'readOnly' => true,
         ]);
@@ -148,6 +156,8 @@ class PostController extends Controller implements HasMiddleware
             'links' => Link::orderBy('title')->where('status', 'active')->get(),
             'editData' => $post->load('images'),
             'postCategories' => PostCategory::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postCreators' => Creator::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postPublishers' => Publisher::where('status', 'active')->orderBy('id', 'desc')->get(),
             'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
         ]);
     }
@@ -169,11 +179,14 @@ class PostController extends Controller implements HasMiddleware
             'link' => 'nullable|string|max:255',
             'source' => 'nullable|string|max:255',
             'category_code' => 'nullable|string',
+            'creator_id' => 'nullable|numeric',
+            'publisher_id' => 'nullable|numeric',
             'type' => 'nullable|string',
             'status' => 'nullable|string|in:active,inactive',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp,svg,webp|max:2048',
         ]);
+
 
         $validated['updated_by'] = $request->user()->id;
         $validated['post_date'] = Carbon::parse($validated['post_date'])->setTimezone('Asia/Bangkok')->startOfDay()->toDateString();

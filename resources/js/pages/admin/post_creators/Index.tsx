@@ -17,7 +17,7 @@ const Index = () => {
             href: '/admin/posts',
         },
         {
-            title: t('Categories'),
+            title: t('Creators'),
             href: '/admin/post_creators',
         },
     ];

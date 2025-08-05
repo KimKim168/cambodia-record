@@ -84,6 +84,16 @@ const MyTableData = () => {
                                     <ArrowUpDown size={16} /> {t('Category Code')}
                                 </span>
                             </TableHead>
+                            <TableHead onClick={() => handleSort('creator_id')}>
+                                <span className="flex cursor-pointer items-center">
+                                    <ArrowUpDown size={16} /> {t('Creator Name')}
+                                </span>
+                            </TableHead>
+                             <TableHead onClick={() => handleSort('publisher_id')}>
+                                <span className="flex cursor-pointer items-center">
+                                    <ArrowUpDown size={16} /> {t('Publisher Name')}
+                                </span>
+                            </TableHead>
                             <TableHead onClick={() => handleSort('type')}>
                                 <span className="flex cursor-pointer items-center">
                                     <ArrowUpDown size={16} /> {t('Type')}
@@ -209,6 +219,8 @@ const MyTableData = () => {
                                     )}
                                 </TableCell>
                                 <TableCell>{item.category_code || '---'}</TableCell>
+                                <TableCell>{item.creator?.name || '---'}</TableCell>
+                                <TableCell>{item.publisher?.name || '---'}</TableCell>
                                 <TableCell>{item.type || '---'}</TableCell>
                                 <TableCell>
                                     {item.total_view_counts ? <span className="flex items-center gap-1">{item.total_view_counts}</span> : '---'}

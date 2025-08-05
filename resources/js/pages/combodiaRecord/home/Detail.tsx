@@ -53,7 +53,15 @@ const Detail = () => {
               />
             </div> */}
             <div>
-              <MyMiltiImages/>
+              <div
+            className="w-full aspect-video overflow-hidden rounded-xl shadow-lg hover:scale-[1.01] transition cursor-pointer"
+          >
+            <img
+              src={`/assets/demo-images/conflict.png`}
+              alt="Main image"
+              className="w-full h-full object-cover"
+            />
+          </div>
             </div>
           </div>
 

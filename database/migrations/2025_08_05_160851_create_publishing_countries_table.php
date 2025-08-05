@@ -11,18 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('post_categories', function (Blueprint $table) {
+        Schema::create('publishing_countries', function (Blueprint $table) {
             $table->id();
-
             $table->string('name');
-            $table->string('name_kh')->nullable();
             $table->string('code')->unique();
             $table->string('status')->nullable()->default('active');
-            $table->string('short_description', 500)->nullable();
-            $table->string('short_description_kh', 500)->nullable();
-            $table->string('image')->nullable();
-            $table->string('banner')->nullable();
-            $table->integer('order_index')->nullable()->default(1);
 
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')
@@ -37,17 +30,7 @@ return new class extends Migration
                 ->on('users')
                 ->onUpdate('CASCADE')
                 ->onDelete('SET NULL');
-
             $table->timestamps();
-        });
-
-        Schema::table('post_categories', function (Blueprint $table) {
-            $table->string('parent_code')->nullable();
-            $table->foreign('parent_code')
-                ->references('code')
-                ->on('post_categories')
-                ->onUpdate('CASCADE')
-                ->onDelete('CASCADE');
         });
     }
 
@@ -56,12 +39,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('post_categories', function (Blueprint $table) {
-            $table->dropForeign(['parent_code']);
-            $table->dropForeign(['created_by']);
-            $table->dropForeign(['updated_by']);
-        });
-        
-        Schema::dropIfExists('post_categories');
+        Schema::dropIfExists('publishing_countries');
     }
 };

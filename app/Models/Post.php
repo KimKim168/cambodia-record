@@ -15,6 +15,26 @@ class Post extends Model
     {
         return $this->belongsTo(PostCategory::class, 'category_code', 'code');
     }
+
+    // public function creator()
+    // {
+    //     return $this->belongsTo(Creator::class, 'creator_code', 'code');
+    // }
+     public function creator()
+    {
+        return $this->belongsTo(Creator::class, 'creator_id', 'id');
+    }
+
+     public function publisher()
+    {
+        return $this->belongsTo(Publisher::class, 'publisher_id', 'id');
+    }
+
+      public function publishing_country()
+    {
+        return $this->belongsTo(PublishingCountry::class, 'publishing_country_id', 'id');
+    }
+    
     public function source_detail()
     {
         return $this->belongsTo(Link::class, 'source', 'id');

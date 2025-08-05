@@ -24,6 +24,11 @@ import {
     SquareUserIcon,
     UsersIcon,
     MailCheckIcon,
+    ListTodoIcon,
+    TagsIcon,
+    BookmarkCheckIcon,
+    UserRoundPen,
+    NotebookPen,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -36,50 +41,50 @@ export function AppSidebar() {
             url: '/dashboard',
             icon: LayoutDashboardIcon,
         },
-        // {
-        //     title: t('Items'),
-        //     permission: 'item view',
-        //     url: '/admin/items',
-        //     icon: ListTodoIcon,
-        //     subItems: [
-        //         {
-        //             title: t('Items'),
-        //             permission: 'item view',
-        //             icon: ListTodoIcon,
-        //             url: '/admin/items',
-        //         },
-        //         {
-        //             title: t('Categories'),
-        //             permission: 'item view',
-        //             icon: Layers2Icon,
-        //             url: '/admin/item_categories',
-        //         },
-        //         // {
-        //         //     title: t('Brands'),
-        //         //     permission: 'item view',
-        //         //     icon: TagsIcon,
-        //         //     url: '/admin/item_brands',
-        //         // },
-        //         // {
-        //         //     title: t('Models'),
-        //         //     permission: 'item view',
-        //         //     icon: BookmarkCheckIcon,
-        //         //     url: '/admin/item_models',
-        //         // },
-        //         // {
-        //         //     title: t('Body Types'),
-        //         //     permission: 'item view',
-        //         //     icon: ShapesIcon,
-        //         //     url: '/admin/item_body_types',
-        //         // },
-        //         // {
-        //         //     title: t('View Counts'),
-        //         //     permission: 'item view',
-        //         //     icon: Tally5Icon,
-        //         //     url: '/admin/item_view_counts',
-        //         // },
-        //     ],
-        // },
+        {
+            title: t('Items'),
+            permission: 'item view',
+            url: '/admin/items',
+            icon: ListTodoIcon,
+            subItems: [
+                {
+                    title: t('Items'),
+                    permission: 'item view',
+                    icon: ListTodoIcon,
+                    url: '/admin/items',
+                },
+                {
+                    title: t('Categories'),
+                    permission: 'item view',
+                    icon: Layers2Icon,
+                    url: '/admin/item_categories',
+                },
+                {
+                    title: t('Brands'),
+                    permission: 'item view',
+                    icon: TagsIcon,
+                    url: '/admin/item_brands',
+                },
+                {
+                    title: t('Models'),
+                    permission: 'item view',
+                    icon: BookmarkCheckIcon,
+                    url: '/admin/item_models',
+                },
+                {
+                    title: t('Body Types'),
+                    permission: 'item view',
+                    icon: ShapesIcon,
+                    url: '/admin/item_body_types',
+                },
+                {
+                    title: t('View Counts'),
+                    permission: 'item view',
+                    icon: Tally5Icon,
+                    url: '/admin/item_view_counts',
+                },
+            ],
+        },
         // {
         //     title: t('DTC'),
         //     permission: 'dtc view',
@@ -170,6 +175,24 @@ export function AppSidebar() {
                     url: '/admin/posts',
                 },
                 {
+                    title: t('Creators'),
+                    permission: 'post view',
+                    icon: UserRoundPen,
+                    url: '/admin/post_creators',
+                },
+                {
+                    title: t('Publishers'),
+                    permission: 'post view',
+                    icon: NotebookPen,
+                    url: '/admin/post_publishers',
+                },
+                {
+                    title: t('Publishing Countries'),
+                    permission: 'post view',
+                    icon: NotebookPen,
+                    url: '/admin/post_publishing_countries',
+                },
+                 {
                     title: t('Categories'),
                     permission: 'post view',
                     icon: Layers2Icon,
@@ -181,6 +204,7 @@ export function AppSidebar() {
                     icon: Tally5Icon,
                     url: '/admin/post_view_counts',
                 },
+               
             ],
         },
         {
@@ -229,44 +253,44 @@ export function AppSidebar() {
         //         },
         //     ],
         // },
-        {
-            title: t('Careers'),
-            permission: 'team view',
-            url: '/admin/careers',
-            icon: SquareUserIcon,
-            subItems: [
-                // {
-                //     title: t('Teams'),
-                //     permission: 'team view',
-                //     url: '/admin/teams',
-                //     icon: SquareUserIcon,
-                // },
-                // {
-                //     title: t('Team Categories'),
-                //     permission: 'team view',
-                //     url: '/admin/team_categories',
-                //     icon: Layers2Icon,
-                // },
-                // {
-                //     title: t('Position'),
-                //     permission: 'team view',
-                //     url: '/admin/positions',
-                //     icon: ReplaceAllIcon,
-                // },
-                {
-                    title: t('Careers'),
-                    permission: 'team view',
-                    url: '/admin/careers',
-                    icon: BriefcaseBusinessIcon,
-                },
-                {
-                    title: t('Career Submits'),
-                    permission: 'team view',
-                    url: '/admin/career_submits',
-                    icon: MailCheckIcon,
-                },
-            ],
-        },
+        // {
+        //     title: t('Career'),
+        //     permission: 'team view',
+        //     url: '/admin/careers',
+        //     icon: SquareUserIcon,
+        //     subItems: [
+        //         {
+        //             title: t('Teams'),
+        //             permission: 'team view',
+        //             url: '/admin/teams',
+        //             icon: SquareUserIcon,
+        //         },
+        //         {
+        //             title: t('Team Categories'),
+        //             permission: 'team view',
+        //             url: '/admin/team_categories',
+        //             icon: Layers2Icon,
+        //         },
+        //         {
+        //             title: t('Position'),
+        //             permission: 'team view',
+        //             url: '/admin/positions',
+        //             icon: ReplaceAllIcon,
+        //         },
+        //         {
+        //             title: t('Careers'),
+        //             permission: 'team view',
+        //             url: '/admin/careers',
+        //             icon: BriefcaseBusinessIcon,
+        //         },
+        //         {
+        //             title: t('Career Submits'),
+        //             permission: 'team view',
+        //             url: '/admin/career_submits',
+        //             icon: MailCheckIcon,
+        //         },
+        //     ],
+        // },
         // {
         //     title: t('Orders'),
         //     permission: 'order view',
@@ -373,12 +397,12 @@ export function AppSidebar() {
             url: '/admin/application_info',
             icon: InfoIcon,
         },
-        // {
-        //     title: t('Types'),
-        //     permission: 'type view',
-        //     url: '/admin/types',
-        //     icon: ShapesIcon,
-        // },
+        {
+            title: t('Types'),
+            permission: 'type view',
+            url: '/admin/types',
+            icon: ShapesIcon,
+        },
     ];
 
     const footerNavItems: NavItem[] = [

@@ -7,6 +7,7 @@ use App\Http\Controllers\CareerController;
 use App\Http\Controllers\CareerSubmitController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CreatorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GarageController;
 use App\Http\Controllers\GaragePostController;
@@ -30,8 +31,11 @@ use App\Http\Controllers\PhoneCompanyController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\PostCategoryController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\PostCreatorController;
 use App\Http\Controllers\PostViewController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\PublisherController;
+use App\Http\Controllers\PublishingCountryController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\TeamCategoryController;
@@ -73,7 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('admin/item_colors', ItemColorController::class);
     Route::post('admin/item_colors/{item_colors}/update', [ItemColorController::class, 'update']);
 
-// Post Route
+    // Post Route
     Route::resource('admin/posts', PostController::class);
     Route::post('admin/posts/{post}/update', [PostController::class, 'update']);
     Route::post('admin/posts/{post}/update_status', [PostController::class, 'update_status']);
@@ -100,7 +104,7 @@ Route::middleware('auth')->group(function () {
     Route::post('admin/partners/{partner}/update', [PartnerController::class, 'update']);
     Route::post('admin/partners/{partner}/update_status', [PartnerController::class, 'update_status']);
 
-     // Client Route
+    // Client Route
     Route::resource('admin/clients', ClientController::class);
     Route::post('admin/clients/{client}/update', [ClientController::class, 'update']);
     Route::post('admin/clients/{client}/update_status', [ClientController::class, 'update_status']);
@@ -195,6 +199,23 @@ Route::middleware('auth')->group(function () {
     Route::get('admin/all_page_categories', [PostCategoryController::class, 'all_page_categories']);
     Route::post('admin/post_categories/{post_category}/update_status', [PostCategoryController::class, 'update_status']);
 
+    // Post Creator Route
+    Route::resource('admin/post_creators', CreatorController::class);
+    Route::post('admin/post_creators/{post_creator}/update', [CreatorController::class, 'update']);
+    Route::get('admin/all_page_creators', [CreatorController::class, 'all_page_creators']);
+    Route::post('admin/post_creators/{post_creator}/update_status', [CreatorController::class, 'update_status']);
+
+    // Post Creator Route
+    Route::resource('admin/post_publishing_countries', PublishingCountryController::class);
+    Route::post('admin/post_publishing_countries/{publishing_country}/update', [PublishingCountryController::class, 'update']);
+    Route::get('admin/all_page_publishing_countries', [PublishingCountryController::class, 'all_page_publishing_countries']);
+    Route::post('admin/post_publishing_countries/{publishing_country}/update_status', [PublishingCountryController::class, 'update_status']);
+
+    // Post Publisher Route
+    Route::resource('admin/post_publishers', PublisherController::class);
+    Route::post('admin/post_publishers/{post_publisher}/update', [PublisherController::class, 'update']);
+    Route::get('admin/all_page_publishers', [PublisherController::class, 'all_page_publishers']);
+    Route::post('admin/post_publishers/{post_publisher}/update_status', [PublisherController::class, 'update_status']);
 
     // Page Position Route
     Route::resource('admin/page_positions', PagePositionController::class);

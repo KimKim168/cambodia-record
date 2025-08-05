@@ -14,7 +14,6 @@ class CambodiaRecordController extends Controller
 
         return Inertia::render('combodiaRecord/home/Index');
     }
-
      public function post(){
 
         return Inertia::render('combodiaRecord/home/Post');

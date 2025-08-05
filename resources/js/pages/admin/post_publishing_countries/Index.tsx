@@ -17,8 +17,8 @@ const Index = () => {
             href: '/admin/posts',
         },
         {
-            title: t('Categories'),
-            href: '/admin/post_creators',
+            title: t('Publishing Countrys'),
+            href: '/admin/post_publishing_countries',
         },
     ];
     const hasPermission = usePermission();
