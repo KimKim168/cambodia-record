@@ -29,6 +29,7 @@ import {
     BookmarkCheckIcon,
     UserRoundPen,
     NotebookPen,
+    Earth,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -189,7 +190,7 @@ export function AppSidebar() {
                 {
                     title: t('Publishing Countries'),
                     permission: 'post view',
-                    icon: NotebookPen,
+                    icon: Earth,
                     url: '/admin/post_publishing_countries',
                 },
                  {

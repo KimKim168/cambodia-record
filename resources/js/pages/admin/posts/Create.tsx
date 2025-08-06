@@ -30,12 +30,15 @@ const formSchema = z.object({
     short_description_kh: z.string().max(500).optional(),
     link: z.string().max(255).optional(),
     type: z.string().optional(),
+    subject: z.string().optional(),
+    year: z.string().optional(),
     status: z.string().optional(),
     parent_id: z.string().optional(),
     source: z.string().optional(),
     category_code: z.string().optional(),
     creator_id: z.string().optional(),
     publisher_id: z.string().optional(),
+    publishing_countries_code: z.string().optional(),
     post_date: z.coerce.date(),
 });
 
@@ -55,7 +58,7 @@ export default function Create() {
     };
 
     const { post, progress, processing, transform, errors } = inertiaUseForm();
-    const { postCategories, postCreators, postPublishers, types, editData, links, readOnly } = usePage().props;
+    const { postCategories, postCreators, publishingCountry, postPublishers, types, editData, links, readOnly } = usePage().props;
 
     const [files, setFiles] = useState<File[] | null>(null);
     const [long_description, setLong_description] = useState(editData?.long_description || '');
@@ -71,11 +74,14 @@ export default function Create() {
             short_description_kh: editData?.short_description_kh || '',
             link: editData?.link || '',
             type: editData?.type || 'content',
+            subject: editData?.subject || '',
+            year: editData?.year || '',
             source: editData?.source?.toString() || '',
             status: editData?.status || 'active',
             category_code: editData?.category_code?.toString() || '',
             creator_id: editData?.creator_id?.toString() || '',
             publisher_id: editData?.publisher_id?.toString() || '',
+            publishing_countries_code: editData?.publishing_countries_code?.toString() || '',
             post_date: editData?.id ? new Date(editData?.post_date) : new Date(),
         },
     });
@@ -272,8 +278,8 @@ export default function Create() {
                     />
 
                     <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
-                        <div className="col-span-6 flex space-x-2">
-                            {/* <span>
+                        {/* <div className="col-span-6 flex space-x-2">
+                            <span>
                                 <FormField
                                     control={form.control}
                                     name="source"
@@ -312,7 +318,7 @@ export default function Create() {
                                         </FormItem>
                                     )}
                                 />
-                            </span> */}
+                            </span>
                             <span className="flex-1">
                                 <FormField
                                     control={form.control}
@@ -329,8 +335,23 @@ export default function Create() {
                                     )}
                                 />
                             </span>
+                        </div> */}
+                        <div className="col-span-6">
+                            <FormField
+                                control={form.control}
+                                name="subject"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('Subject')}</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder={t('Subject')} type="text" {...field} />
+                                        </FormControl>
+                                        <FormDescription>{t('Enter a short and clear subject.')}</FormDescription>
+                                        <FormMessage>{errors.subject && <div>{errors.subject}</div>}</FormMessage>
+                                    </FormItem>
+                                )}
+                            />
                         </div>
-
                         {types ? (
                             <div className="col-span-6">
                                 <FormField
@@ -577,6 +598,80 @@ export default function Create() {
                                         </Popover>
                                         <FormDescription>{t('Select the publisher where this post will show.')}</FormDescription>
                                         <FormMessage>{errors.publisher_id && <div>{errors.publisher_id}</div>}</FormMessage>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className="col-span-6">
+                            <FormField
+                                control={form.control}
+                                name="publishing_countries_code"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col" key={field.value}>
+                                        <FormLabel>{t('Publishing Countries')}</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant="outline"
+                                                        role="combobox"
+                                                        className={cn('w-full justify-between', !field.value && 'text-muted-foreground')}
+                                                    >
+                                                        {field.value
+                                                            ? (() => {
+                                                                  const publishing_country = publishingCountry?.find(
+                                                                      (publishing_country) => publishing_country.code === field.value,
+                                                                  );
+                                                                  return publishing_country ? `${publishing_country.name}` : '';
+                                                              })()
+                                                            : t('Select Publishing country')}
+
+                                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="p-0">
+                                                <Command>
+                                                    <CommandInput placeholder="Search..." />
+                                                    <CommandList>
+                                                        <CommandEmpty>{t('No data')}</CommandEmpty>
+                                                        <CommandGroup>
+                                                            <CommandItem
+                                                                value=""
+                                                                onSelect={() => {
+                                                                    form.setValue('publishing_countries_code', '');
+                                                                }}
+                                                            >
+                                                                <Check
+                                                                    className={cn('mr-2 h-4 w-4', '' == field.value ? 'opacity-100' : 'opacity-0')}
+                                                                />
+                                                                {t('Select category')}
+                                                            </CommandItem>
+                                                            {publishingCountry?.map((p_country) => (
+                                                                <CommandItem
+                                                                    value={p_country.name}
+                                                                    key={p_country.code}
+                                                                    onSelect={() => {
+                                                                        form.setValue('publishing_countries_code', p_country.code);
+                                                                    }}
+                                                                >
+                                                                    <Check
+                                                                        className={cn(
+                                                                            'mr-2 h-4 w-4',
+                                                                            p_country.code === field.value ? 'opacity-100' : 'opacity-0',
+                                                                        )}
+                                                                    />
+                                                                    {p_country.name}
+                                                                    {/* {category.name_kh && `(${category.name_kh})`} */}
+                                                                </CommandItem>
+                                                            ))}
+                                                        </CommandGroup>
+                                                    </CommandList>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormDescription>{t('Select the publishing country where this post will show.')}</FormDescription>
+                                        <FormMessage>{errors.publishing_countries_code && <div>{errors.publishing_countries_code}</div>}</FormMessage>
                                     </FormItem>
                                 )}
                             />

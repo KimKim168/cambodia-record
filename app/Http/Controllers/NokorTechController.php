@@ -262,7 +262,7 @@ class NokorTechController extends Controller
         //     ->where('status', 'active') // Specify 'item_categories' table for status
         //     ->get();
         // $productListBanners = Banner::where('position_code', 'PRODUCT_SEARCH')->orderBy('order_index')->where('status', 'active')->get();
-
+        
         return Inertia::render('nokor-tech/shops/Show', [
             'shop' => Shop::find($id),
             'tableData' => $tableData,

@@ -29,12 +29,10 @@ class Post extends Model
     {
         return $this->belongsTo(Publisher::class, 'publisher_id', 'id');
     }
-
-      public function publishing_country()
+     public function publishing_country()
     {
-        return $this->belongsTo(PublishingCountry::class, 'publishing_country_id', 'id');
+        return $this->belongsTo(PublishingCountry::class,'publishing_countries_code', 'code');
     }
-    
     public function source_detail()
     {
         return $this->belongsTo(Link::class, 'source', 'id');

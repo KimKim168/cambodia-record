@@ -1,5 +1,4 @@
 import MyDialogCancelButton from '@/components/my-dialog-cancel-button';
-import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -132,12 +131,12 @@ export default function Create({
                             control={form.control}
                             name="type"
                             render={({ field }) => (
-                                <FormItem key={field.value}>
-                                     <FormLabel>{t('Type')}</FormLabel>
+                                <FormItem>
+                                    <FormLabel>{t('Type')}</FormLabel>
                                     <FormControl>
                                         <Input placeholder={t('Name')} type="text" {...field} />
                                     </FormControl>
-                                    <FormMessage>{errors.type && <div>{errors.type}</div>}</FormMessage>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
@@ -248,7 +247,7 @@ export default function Create({
                                 <Loader />
                             </span>
                         )}
-                       {processing ? t('Submitting') : t('Submit')}
+                        {processing ? t('Submitting') : t('Submit')}
                     </Button>
                 )}
             </form>

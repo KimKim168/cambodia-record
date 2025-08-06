@@ -1,46 +1,49 @@
 import styled from 'styled-components';
 import Search from '../components/search';
 import CamboLayout from '../layout/CamboLayout';
+import { usePage } from '@inertiajs/react';
 
 const Post = () => {
-    const posts = [
-        {
-            id: 1,
-            title: 'Solider station at the frontline on 27 July 2025 ',
-            imageUrl: '/assets/demo-images/conflict.webp',
-            buttonLabel: 'Details',
-        },
-        {
-            id: 2,
-            title: 'Conflict Zone Medic',
-            imageUrl: '/assets/demo-images/conflict.webp',
-            buttonLabel: 'Details',
-        },
-        {
-            id: 3,
-            title: 'Military Communications Officer',
-            imageUrl: '/assets/demo-images/conflict.webp',
-            buttonLabel: 'Details',
-        },
-        {
-            id: 4,
-            title: 'Reconnaissance Drone Operator',
-            imageUrl: '/assets/demo-images/conflict.webp',
-            buttonLabel: 'Details',
-        },
-        {
-            id: 5,
-            title: 'Field Intelligence Analyst',
-            imageUrl: '/assets/demo-images/conflict.webp',
-            buttonLabel: 'Details',
-        },
-        {
-            id: 6,
-            title: 'Combat Logistics Coordinator',
-            imageUrl: '/assets/demo-images/conflict.webp',
-            buttonLabel: 'Details',
-        },
-    ];
+    // const tableData = [
+    //     {
+    //         id: 1,
+    //         title: 'Solider station at the frontline on 27 July 2025 ',
+    //         imageUrl: '/assets/demo-images/conflict.webp',
+    //         buttonLabel: 'Details',
+    //     },
+    //     {
+    //         id: 2,
+    //         title: 'Conflict Zone Medic',
+    //         imageUrl: '/assets/demo-images/conflict.webp',
+    //         buttonLabel: 'Details',
+    //     },
+    //     {
+    //         id: 3,
+    //         title: 'Military Communications Officer',
+    //         imageUrl: '/assets/demo-images/conflict.webp',
+    //         buttonLabel: 'Details',
+    //     },
+    //     {
+    //         id: 4,
+    //         title: 'Reconnaissance Drone Operator',
+    //         imageUrl: '/assets/demo-images/conflict.webp',
+    //         buttonLabel: 'Details',
+    //     },
+    //     {
+    //         id: 5,
+    //         title: 'Field Intelligence Analyst',
+    //         imageUrl: '/assets/demo-images/conflict.webp',
+    //         buttonLabel: 'Details',
+    //     },
+    //     {
+    //         id: 6,
+    //         title: 'Combat Logistics Coordinator',
+    //         imageUrl: '/assets/demo-images/conflict.webp',
+    //         buttonLabel: 'Details',
+    //     },
+    // ];
+    
+    const { tableData } = usePage().props;
 
     return (
         <CamboLayout>
@@ -48,16 +51,16 @@ const Post = () => {
                 <Search />
             </div>
             <StyledWrapper className="font-kantumruy mx-auto grid max-w-screen-xl grid-cols-1 gap-4 px-4 sm:grid-cols-2 md:grid-cols-3 xl:px-0">
-                {posts.map((post) => (
-                    <a href={`/posts/${post.id}`} key={post.id} className="card">
-                        <img src={post.imageUrl} alt={post.title} className="card__hero" />
+                {tableData?.data?.map((item) => (
+                    <a href={`/posts/${item.id}`} key={item.id} className="card">
+                        <img src={`/assets/images/posts/${item?.images?.[0]?.image}`} alt={item.title} className="card__hero" />
                         <footer className="card__footer">
-                            <p className="card__job-title line-clamp-2">{post.title}</p>
-                            <button className="card__btn">{post.buttonLabel}</button>
+                            <p className="card__job-title line-clamp-2">{item.title}</p>
+                            <button className="card__btn">Details</button>
                         </footer>
                     </a>
                 ))}
-            </StyledWrapper>
+            </StyledWrapper>    
         </CamboLayout>
     );
 };

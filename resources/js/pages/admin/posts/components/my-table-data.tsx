@@ -59,24 +59,19 @@ const MyTableData = () => {
                                     <ArrowUpDown size={16} /> {t('Title')}
                                 </span>
                             </TableHead>
-                            <TableHead onClick={() => handleSort('title_kh')}>
-                                <span className="flex cursor-pointer items-center">
-                                    <ArrowUpDown size={16} /> {t('Title Khmer')}
-                                </span>
-                            </TableHead>
                             <TableHead onClick={() => handleSort('short_description')}>
                                 <span className="flex cursor-pointer items-center">
                                     <ArrowUpDown size={16} /> {t('Short Description')}
                                 </span>
                             </TableHead>
-                            <TableHead onClick={() => handleSort('short_description_kh')}>
-                                <span className="flex cursor-pointer items-center">
-                                    <ArrowUpDown size={16} /> {t('Short Description Khmer')}
-                                </span>
-                            </TableHead>
                             <TableHead onClick={() => handleSort('status')}>
                                 <span className="flex cursor-pointer items-center">
                                     <ArrowUpDown size={16} /> {t('Status')}
+                                </span>
+                            </TableHead>
+                            <TableHead onClick={() => handleSort('subject')}>
+                                <span className="flex cursor-pointer items-center">
+                                    <ArrowUpDown size={16} /> {t('Subject')}
                                 </span>
                             </TableHead>
                             <TableHead onClick={() => handleSort('category_code')}>
@@ -92,6 +87,11 @@ const MyTableData = () => {
                              <TableHead onClick={() => handleSort('publisher_id')}>
                                 <span className="flex cursor-pointer items-center">
                                     <ArrowUpDown size={16} /> {t('Publisher Name')}
+                                </span>
+                            </TableHead>
+                            <TableHead onClick={() => handleSort('publishing_countries_code')}>
+                                <span className="flex cursor-pointer items-center">
+                                    <ArrowUpDown size={16} /> {t('Publishing Country Code')}
                                 </span>
                             </TableHead>
                             <TableHead onClick={() => handleSort('type')}>
@@ -203,9 +203,7 @@ const MyTableData = () => {
                                     )}
                                 </TableCell>
                                 <TableCell>{item.title || '---'}</TableCell>
-                                <TableCell>{item.title_kh || '---'}</TableCell>
                                 <TableCell>{item.short_description || '---'}</TableCell>
-                                <TableCell>{item.short_description_kh || '---'}</TableCell>
                                 <TableCell>
                                     {hasPermission('post update') ? (
                                         <MyUpdateStatusButton
@@ -218,9 +216,11 @@ const MyTableData = () => {
                                         <span className="capitalize">{item.status}</span>
                                     )}
                                 </TableCell>
+                                <TableCell>{item.subject || '---'}</TableCell>
                                 <TableCell>{item.category_code || '---'}</TableCell>
                                 <TableCell>{item.creator?.name || '---'}</TableCell>
                                 <TableCell>{item.publisher?.name || '---'}</TableCell>
+                                <TableCell>{item.publishing_countries_code || '---'}</TableCell>
                                 <TableCell>{item.type || '---'}</TableCell>
                                 <TableCell>
                                     {item.total_view_counts ? <span className="flex items-center gap-1">{item.total_view_counts}</span> : '---'}

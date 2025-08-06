@@ -1,79 +1,76 @@
 // components/NewsDetail.tsx
-import React from 'react';
-import CambodiaRecord from '../components/cambodia-record';
-import MyMiltiImages from '../components/my-milti-images';
+import { usePage } from '@inertiajs/react';
 import CamboLayout from '../layout/CamboLayout';
-import Search from '../components/search';
+import CambodiaRecord from '../components/cambodia-record';
 
 const Detail = () => {
-  return (
-    <CamboLayout>
-      <div className="p-4 md:p-8 mx-auto">
-     
-        <div className="bg-white pb-8 max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Left content */}
-          <div className="md:col-span-2">
-            <h2 className="text-xl font-semibold mb-2">
-              Solider station at the frontline on 27 July 2025
-            </h2>
-            <p className="text-gray-700 mb-4">
-              Cambodia and Thai have been in war for decades. Now the conflict begins again due to Thai attempts to control the border.
-            </p>
-            <ul className="text-sm text-gray-800 space-y-1 mb-4">
-              <li><span className="font-semibold">Creator:</span> </li>
-              <li><span className="font-semibold">Types of media:</span> Photo</li>
-              <li><span className="font-semibold">Subject:</span> </li>
-              <li><span className="font-semibold">Publisher:</span> </li>
-              <li><span className="font-semibold">Date of publishing:</span> </li>
-              <li><span className="font-semibold">Publishing country:</span> </li>
-              <li><span className="font-semibold">Description:</span> </li>
-              <li><span className="font-semibold">File Upload:</span> </li>
-              <li>
-                <span className="font-semibold">Link:</span>{' '}
-                <a
-                  href="https://www.facebook.com/photo?fbid=1310029274462925&set=a.711264117672780"
-                  className="text-blue-600 underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View Original Post
-                </a>
-              </li>
-              <li><span className="font-semibold">Verify:</span> </li>
-              <li><span className="font-semibold">Limited Access:</span> </li>
-            </ul>
-          </div>
-          {/* Right content (image preview) */}
-          <div>
-            {/* <div className="rounded-lg overflow-hidden shadow-lg">
-              <img
-                src="/assets/demo-images/conflict.png" // Replace this with the actual thumbnail if needed
-                alt="Conflict thumbnail"
-                className="w-full"
-              />
-            </div> */}
-            <div>
-              <div
-            className="w-full aspect-video overflow-hidden rounded-xl shadow-lg hover:scale-[1.01] transition cursor-pointer"
-          >
-            <img
-              src={`/assets/demo-images/conflict.png`}
-              alt="Main image"
-              className="w-full h-full object-cover"
-            />
-          </div>
-            </div>
-          </div>
+    const { post} = usePage().props;
+    const formatDate = (dateString: string | null) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+        }).format(date);
+    };
+    return (
+        <CamboLayout>
+            <div className="mx-auto p-4 md:p-8">
+                <div className="bg-white px-4 py-12 sm:px-6 lg:px-8">
+                    <div className="mx-auto grid max-w-screen-xl grid-cols-1 gap-10 md:grid-cols-3">
+                        {/* Left content */}
+                        <div className="space-y-4 md:col-span-2">
+                            <div>
+                                <h2 className="mb-2 text-2xl font-bold text-gray-900">{post?.title}</h2>
+                                <p className="text-base text-gray-600">{post?.short_description}</p>
+                            </div>
 
-        </div>
-        <hr/>
-      </div>
-       <div className='max-w-screen-xl mx-auto px-4 md:px-8 xl:px-0 mb-16'>
-        <p className='mb-4'>Related</p>
-        <CambodiaRecord/>
-        </div>
-    </CamboLayout>
-  );
+                            <ul className="space-y-1 text-sm text-gray-700">
+                                <li>
+                                    <span className="text-base leading-relaxed">Creator :</span> {post?.creator?.name}
+                                </li>
+                                <li>
+                                    <span className="text-base leading-relaxed">Types of media :</span> {post?.type}
+                                </li>
+                                <li>
+                                    <span className="text-base leading-relaxed">Subject :</span> {post?.subject}
+                                </li>
+                                <li>
+                                    <span className="text-base leading-relaxed">Publisher :</span> {post?.publisher?.name ?? 'Unknown'}
+                                </li>
+                                <li>
+                                    <span className="text-base leading-relaxed">Date of publishing :</span> {formatDate(post?.post_date)}
+                                </li>
+                                <li>
+                                    <span className="text-base leading-relaxed">Publishing country :</span> {post?.publishing_country?.name || 'N/A'}
+                                </li>
+                                <li className="font-kantumruy text-base leading-relaxed text-gray-800">
+                                    <span dangerouslySetInnerHTML={{ __html: post?.long_description }} />
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Right content - image */}
+                        <div className="w-full">
+                            <div className="overflow-hidden rounded-2xl shadow-md transition-transform duration-300 hover:scale-105">
+                                <img
+                                    src={`/assets/images/posts/${post?.images?.[0]?.image}`}
+                                    alt="Main"
+                                    className="aspect-video h-full w-full object-cover"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr className="my-4 border-t border-gray-300" />
+            </div>
+            <div className="mx-auto mb-16 max-w-screen-xl px-4 md:px-8 xl:px-0">
+                <p className="mb-4">Cambodia's Record</p>
+                <CambodiaRecord/>
+            </div>
+        </CamboLayout>
+    );
 };
 
 export default Detail;

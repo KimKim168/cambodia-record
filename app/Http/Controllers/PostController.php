@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\PostImage;
 use App\Models\Publisher;
+use App\Models\PublishingCountry;
 use App\Models\Type;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -39,7 +40,7 @@ class PostController extends Controller implements HasMiddleware
 
         $query = Post::query();
 
-        $query->with('created_by', 'updated_by', 'images', 'category', 'creator','publisher' ,'source_detail');
+        $query->with('created_by', 'updated_by', 'images', 'category', 'creator','publisher' ,'source_detail','publishing_country');
 
         if ($status) {
             $query->where('status', $status);
@@ -70,6 +71,7 @@ class PostController extends Controller implements HasMiddleware
             'postCategories' => PostCategory::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postCreators' => Creator::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPublishers' => Publisher::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'publishingCountry' => PublishingCountry::where('status', 'active')->orderBy('id', 'desc')->get(),
             'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
         ]);
     }
@@ -90,9 +92,12 @@ class PostController extends Controller implements HasMiddleware
             'link' => 'nullable|string|max:255',
             'source' => 'nullable|string|max:255',
             'category_code' => 'nullable|string',
+            'publishing_countries_code' => 'nullable|string',
             'creator_id' => 'nullable|numeric',
             'publisher_id' => 'nullable|numeric',
             'type' => 'nullable|string',
+            'subject' => 'nullable|string',
+            'year' => 'nullable|string',
             'status' => 'nullable|string|in:active,inactive',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp,svg,webp|max:2048',
@@ -141,6 +146,7 @@ class PostController extends Controller implements HasMiddleware
             'postCategories' => PostCategory::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postCreators' => Creator::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPublishers' => Publisher::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'publishingCountry' => PublishingCountry::where('status', 'active')->orderBy('id', 'desc')->get(),
             'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
             'readOnly' => true,
         ]);
@@ -158,6 +164,7 @@ class PostController extends Controller implements HasMiddleware
             'postCategories' => PostCategory::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postCreators' => Creator::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPublishers' => Publisher::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'publishingCountry' => PublishingCountry::where('status', 'active')->orderBy('id', 'desc')->get(),
             'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
         ]);
     }
@@ -179,9 +186,12 @@ class PostController extends Controller implements HasMiddleware
             'link' => 'nullable|string|max:255',
             'source' => 'nullable|string|max:255',
             'category_code' => 'nullable|string',
+            'publishing_countries_code' => 'nullable|string',
             'creator_id' => 'nullable|numeric',
             'publisher_id' => 'nullable|numeric',
             'type' => 'nullable|string',
+            'subject' => 'nullable|string',
+            'year' => 'nullable|string',
             'status' => 'nullable|string|in:active,inactive',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp,svg,webp|max:2048',
