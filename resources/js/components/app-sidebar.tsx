@@ -30,6 +30,7 @@ import {
     UserRoundPen,
     NotebookPen,
     Earth,
+    TvMinimalPlayIcon,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -118,26 +119,26 @@ export function AppSidebar() {
         //         },
         //     ],
         // },
-        // {
-        //     title: t('Videos'),
-        //     permission: 'video view',
-        //     url: '/admin/videos',
-        //     icon: TvMinimalPlayIcon,
-        //     subItems: [
-        //         {
-        //             title: t('Videos'),
-        //             permission: 'video view',
-        //             url: '/admin/videos',
-        //             icon: TvMinimalPlayIcon,
-        //         },
-        //         {
-        //             title: t('Playlists'),
-        //             permission: 'video view',
-        //             url: '/admin/video_play_lists',
-        //             icon: TvMinimalPlayIcon,
-        //         },
-        //     ],
-        // },
+        {
+            title: t('Videos'),
+            permission: 'video view',
+            url: '/admin/videos',
+            icon: TvMinimalPlayIcon,
+            subItems: [
+                {
+                    title: t('Videos'),
+                    permission: 'video view',
+                    url: '/admin/videos',
+                    icon: TvMinimalPlayIcon,
+                },
+                {
+                    title: t('Playlists'),
+                    permission: 'video view',
+                    url: '/admin/video_play_lists',
+                    icon: TvMinimalPlayIcon,
+                },
+            ],
+        },
         // {
         //     title: t('Videos'),
         //     permission: 'video view',

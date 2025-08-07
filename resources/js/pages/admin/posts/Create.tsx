@@ -17,7 +17,7 @@ import { BreadcrumbItem } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm as inertiaUseForm, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
-import { CalendarIcon, Check, ChevronsUpDown, CloudUpload, Loader } from 'lucide-react';
+import { CalendarIcon, Check, ChevronsUpDown, CloudUpload, Loader, Paperclip } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -57,6 +57,25 @@ export default function Create() {
         },
     };
 
+    const dropZoneConfigUploadFile = {
+        maxFiles: 100,
+        maxSize: 1024 * 1024 * 300, // 300MB (307200 KB = 300MB)
+        multiple: true,
+        accept: {
+            'application/pdf': ['.pdf'],
+            'application/msword': ['.doc'],
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+            'application/vnd.ms-excel': ['.xls'],
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+            'application/vnd.ms-powerpoint': ['.ppt'],
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx'],
+            'image/jpeg': ['.jpg', '.jpeg'],
+            'audio/mpeg': ['.mp3'],
+            'video/mp4': ['.mp4'],
+            'video/quicktime': ['.mov'],
+        },
+    };
+
     const { post, progress, processing, transform, errors } = inertiaUseForm();
     const { postCategories, postCreators, publishingCountry, postPublishers, types, editData, links, readOnly } = usePage().props;
 
@@ -64,6 +83,7 @@ export default function Create() {
     const [long_description, setLong_description] = useState(editData?.long_description || '');
     const [long_description_kh, setLong_description_kh] = useState(editData?.long_description_kh || '');
     const [editorKey, setEditorKey] = useState(0);
+    const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -88,25 +108,21 @@ export default function Create() {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            // console.log(values);
-            // toast(
-            //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            //         <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-            //     </pre>,
-            // );
-            // return;
-            transform(() => ({
+            
+            transform((data) => ({
                 ...values,
                 long_description: long_description,
                 long_description_kh: long_description_kh,
                 images: files || null,
+                files: attachmentFiles || null,
             }));
 
             if (editData?.id) {
-                post(`/admin/posts/${editData?.id}/update`, {
-                    preserveScroll: true,
+                post(`/admin/posts/${editData?.id}`, {
+                    forceFormData: true,
                     onSuccess: (page) => {
                         setFiles(null);
+                        setAttachmentFiles([]); // Clear attachment files on success
                         if (page.props.flash?.success) {
                             toast.success('Success', {
                                 description: page.props.flash.success,
@@ -120,11 +136,12 @@ export default function Create() {
                     },
                     onError: (e) => {
                         toast.error('Error', {
-                            description: 'Failed to create.' + JSON.stringify(e, null, 2),
+                            description: 'Failed to update.' + JSON.stringify(e, null, 2),
                         });
                     },
                 });
             } else {
+                // This is for creating a new post
                 post('/admin/posts', {
                     preserveScroll: true,
                     onSuccess: (page) => {
@@ -133,6 +150,7 @@ export default function Create() {
                         setLong_description_kh('');
                         setEditorKey((prev) => prev + 1);
                         setFiles(null);
+                        setAttachmentFiles([]); // Clear attachment files on success
                         if (page.props.flash?.success) {
                             toast.success('Success', {
                                 description: page.props.flash.success,
@@ -173,6 +191,7 @@ export default function Create() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-5">
+                    {/* ... The rest of your form JSX is unchanged ... */}
                     <div className="grid grid-cols-12 gap-4">
                         <div className="col-span-6">
                             <FormField
@@ -278,64 +297,6 @@ export default function Create() {
                     />
 
                     <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
-                        {/* <div className="col-span-6 flex space-x-2">
-                            <span>
-                                <FormField
-                                    control={form.control}
-                                    name="source"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t('Source')}</FormLabel>
-                                            <Select
-                                                onValueChange={(value) => {
-                                                    field.onChange(value);
-                                                    !editData?.id &&
-                                                        form.setValue('link', links?.find((link: any) => link.id.toString() == value)?.link);
-                                                }}
-                                                defaultValue={field.value}
-                                            >
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder={t('Select')} />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {links?.map((link: any) => (
-                                                        <SelectItem value={link?.id.toString()}>
-                                                            <span>
-                                                                <img
-                                                                    src={`/assets/images/links/thumb/${link?.image}`}
-                                                                    className="aspect-square h-6 object-contain"
-                                                                    alt=""
-                                                                />
-                                                            </span>
-                                                            {link?.title}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage>{errors.link_source && <div>{errors.link_source}</div>}</FormMessage>
-                                        </FormItem>
-                                    )}
-                                />
-                            </span>
-                            <span className="flex-1">
-                                <FormField
-                                    control={form.control}
-                                    name="link"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t('Link')}</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder={t('Link')} type="text" {...field} />
-                                            </FormControl>
-                                            <FormDescription>{t('For external content you can put link here.')}</FormDescription>
-                                            <FormMessage>{errors.link && <div>{errors.link}</div>}</FormMessage>
-                                        </FormItem>
-                                    )}
-                                />
-                            </span>
-                        </div> */}
                         <div className="col-span-6">
                             <FormField
                                 control={form.control}
@@ -372,7 +333,6 @@ export default function Create() {
                                                             {typeObject.label}
                                                         </SelectItem>
                                                     ))}
-                                                    {/* <SelectItem value="link">Link</SelectItem> */}
                                                 </SelectContent>
                                             </Select>
                                             <FormDescription>{t('Choose type (Link) for external content and fill Link input.')}</FormDescription>
@@ -443,7 +403,6 @@ export default function Create() {
                                                                         )}
                                                                     />
                                                                     {category.name}
-                                                                    {/* {category.name_kh && `(${category.name_kh})`} */}
                                                                 </CommandItem>
                                                             ))}
                                                         </CommandGroup>
@@ -512,7 +471,7 @@ export default function Create() {
                                                                     <Check
                                                                         className={cn(
                                                                             'mr-2 h-4 w-4',
-                                                                            category.id === field.value ? 'opacity-100' : 'opacity-0',
+                                                                            category.id.toString() === field.value ? 'opacity-100' : 'opacity-0',
                                                                         )}
                                                                     />
                                                                     {category.name} {category.name_kh && `(${category.name_kh})`}
@@ -585,7 +544,7 @@ export default function Create() {
                                                                     <Check
                                                                         className={cn(
                                                                             'mr-2 h-4 w-4',
-                                                                            publisher.id === field.value ? 'opacity-100' : 'opacity-0',
+                                                                            publisher.id.toString() === field.value ? 'opacity-100' : 'opacity-0',
                                                                         )}
                                                                     />
                                                                     {publisher.name} {publisher.name_kh && `(${publisher.name_kh})`}
@@ -662,7 +621,6 @@ export default function Create() {
                                                                         )}
                                                                     />
                                                                     {p_country.name}
-                                                                    {/* {category.name_kh && `(${category.name_kh})`} */}
                                                                 </CommandItem>
                                                             ))}
                                                         </CommandGroup>
@@ -705,10 +663,6 @@ export default function Create() {
                                                 >
                                                     <img src={URL.createObjectURL(file)} alt={file.name} className="h-full w-full object-contain" />
                                                 </FileUploaderItem>
-                                                // <FileUploaderItem key={i} index={i}>
-                                                //     <Paperclip className="h-4 w-4 stroke-current" />
-                                                //     <span>{file.name}</span>
-                                                // </FileUploaderItem>
                                             ))}
                                         </FileUploaderContent>
                                     </FileUploader>
@@ -738,15 +692,101 @@ export default function Create() {
                                             </span>
                                         </span>
                                     </>
-
-                                    // <FileUploaderItem key={i} index={i}>
-                                    //     <Paperclip className="h-4 w-4 stroke-current" />
-                                    //     <span>{file.name}</span>
-                                    // </FileUploaderItem>
                                 ))}
                             </div>
                         </div>
                     )}
+
+                    {/* Upload File */}
+
+                    <FormField
+                        control={form.control}
+                        name="files"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>{t('Upload File')}</FormLabel>
+                                <FormControl>
+                                    <FileUploader
+                                        value={attachmentFiles}
+                                        onValueChange={setAttachmentFiles}
+                                        dropzoneOptions={dropZoneConfigUploadFile}
+                                        className="relative p-1"
+                                    >
+                                        <FileInput id="attachmentInput" className="outline-1 outline-slate-500 outline-dashed">
+                                            <div className="flex w-full flex-col items-center justify-center p-8">
+                                                <CloudUpload className="h-10 w-10 text-gray-500" />
+                                                <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                                                    <span className="font-semibold">{t('Click to upload')}</span>
+                                                    &nbsp; {t('or drag and drop')}
+                                                </p>
+                                            </div>
+                                        </FileInput>
+
+                                        <FileUploaderContent className="grid w-full grid-cols-3 gap-2 rounded-md lg:grid-cols-4">
+                                            {attachmentFiles?.map((file, i) => (
+                                                <FileUploaderItem
+                                                    key={i}
+                                                    index={i}
+                                                    className="bg-background h-40 w-full overflow-hidden rounded-md border p-0"
+                                                >
+                                                    <div className="relative flex h-full w-full items-center justify-center">
+                                                        {file.type.startsWith('image') ? (
+                                                            <img
+                                                                src={URL.createObjectURL(file)}
+                                                                alt={file.name}
+                                                                className="h-full w-full object-cover"
+                                                            />
+                                                        ) : file.type.startsWith('video') ? (
+                                                            <video className="h-full w-full object-cover" preload="metadata">
+                                                                <source src={URL.createObjectURL(file)} type={file.type} />
+                                                            </video>
+                                                        ) : file.type.startsWith('audio') ? (
+                                                            <audio controls className="w-full">
+                                                                <source src={URL.createObjectURL(file)} type={file.type} />
+                                                            </audio>
+                                                        ) : (
+                                                            <div className="flex flex-col items-center p-2 text-center text-xs">
+                                                                <Paperclip className="mb-1 h-6 w-6 text-gray-500" />
+                                                                {file.name}
+                                                            </div>
+                                                        )}
+                                                        <div className="bg-opacity-50 absolute right-0 bottom-0 left-0 truncate bg-black p-1 text-xs text-white">
+                                                            {file.name}
+                                                        </div>
+                                                    </div>
+                                                </FileUploaderItem>
+                                            ))}
+                                        </FileUploaderContent>
+                                    </FileUploader>
+                                </FormControl>
+                                <FormMessage />
+                                {editData?.upload_file && editData.upload_file.length > 0 && (
+                                    <div className="mt-4 p-1">
+                                        <FormDescription className="mb-2">{t('Uploaded file')}:</FormDescription>
+                                        <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+                                            {editData.upload_file.map((file: any) => (
+                                                <div
+                                                    key={file.id}
+                                                    className="bg-background relative flex items-center justify-between rounded-md border p-2"
+                                                >
+                                                    <a
+                                                        href={`/assets/files/videos/${file.file_name}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex flex-1 items-center gap-2 overflow-hidden text-sm text-blue-600 underline"
+                                                    >
+                                                        <Paperclip className="size-4 flex-shrink-0" />
+                                                        <span className="truncate">{file.file_name}</span>
+                                                    </a>
+                                                    <DeleteButton deletePath="/admin/posts/upload_file/" id={file.id} />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </FormItem>
+                        )}
+                    />
                     {/* Start Long Description */}
                     <div key={editorKey} className="space-y-8">
                         <div>

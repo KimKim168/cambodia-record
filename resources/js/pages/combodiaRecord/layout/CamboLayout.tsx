@@ -1,9 +1,11 @@
+import { usePage } from '@inertiajs/react';
 import { User } from 'lucide-react';
 import { ReactNode } from 'react';
 interface LayoutProps {
     children: ReactNode;
 }
 const CamboLayout = ({ children }: LayoutProps) => {
+    const { application_info } = usePage().props;
     return (
         <>
             {/* Top Border */}
@@ -16,7 +18,7 @@ const CamboLayout = ({ children }: LayoutProps) => {
             </div>
             <main className="font-kantumruy mx-auto min-h-[100vh]">{children}</main>
             <footer className="bg-blue-900 py-2 text-center text-sm text-gray-100 select-none mt-8">
-                <p>© {new Date().getFullYear()} Cambodia's Record. All rights reserved.</p>
+                <p>{application_info?.copyright}</p>
             </footer>
         </>
     );

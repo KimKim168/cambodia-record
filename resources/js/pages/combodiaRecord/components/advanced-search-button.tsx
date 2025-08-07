@@ -7,14 +7,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { usePage } from '@inertiajs/react';
 import { ArrowDown, Check, ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
 
-const types = ['Book', 'Magazine', 'Journal'];
-const years = ['2023', '2022', '2021'];
-const categories = ['History', 'Science', 'Technology'];
-const publishers = ['OUP', 'Penguin', 'HarperCollins'];
-
+// This is a reusable dropdown component, no changes needed here.
 function DropdownSelect({
   label,
   options,
@@ -22,7 +19,8 @@ function DropdownSelect({
   setSelected,
 }: {
   label: string;
-  options: string[];
+  // Ensure options can handle numbers for the year
+  options: (string | number)[]; 
   selected: string;
   setSelected: (value: string) => void;
 }) {
@@ -39,14 +37,16 @@ function DropdownSelect({
         className="w-48 rounded-md border border-white/10 bg-white/50 backdrop-blur-md text-gray-900 shadow-lg"
       >
         <DropdownMenuLabel className="text-xs text-gray-900">{label}</DropdownMenuLabel>
-        {options.map((option, i) => (
+        {/* Use optional chaining in case options is undefined */}
+        {options?.map((option, i) => (
           <DropdownMenuItem
             key={i}
-            onClick={() => setSelected(option)}
+            // Convert option to string for comparison and setting state
+            onClick={() => setSelected(String(option))} 
             className="flex items-center justify-between border border-transparent hover:border hover:border-blue-950  text-sm hover:bg-white/10 cursor-pointer"
           >
             {option}
-            {selected === option && <Check className="h-4 w-4 text-primary " />}
+            {selected === String(option) && <Check className="h-4 w-4 text-primary " />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -55,6 +55,17 @@ function DropdownSelect({
 }
 
 export default function AdvancedSearchButton() {
+  // 1. Get all filter data from the backend via Inertia props.
+  const { types, publisher, category, uniquePostYears } = usePage().props;
+
+  // 2. Prepare the options for the dropdowns.
+  //    - Use optional chaining (?.) in case the data is not available.
+  //    - The `uniquePostYears` array can be used directly.
+  const typeOptions = types?.map(type => type.label);
+  const publisherOptions = publisher?.map(p => p.name);
+  const categoryOptions = category?.map(c => c.name);
+
+  // 3. Set up state for each selected filter.
   const [selectedType, setSelectedType] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -66,28 +77,29 @@ export default function AdvancedSearchButton() {
         <p>Advanced Search</p>
         <ArrowDown className="w-4 h-4" />
       </div>
-      <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <DropdownSelect
           label="Type"
-          options={types}
+          options={typeOptions}
           selected={selectedType}
           setSelected={setSelectedType}
         />
         <DropdownSelect
           label="Year"
-          options={years}
+          // Use uniquePostYears directly as it's already an array of years
+          options={uniquePostYears} 
           selected={selectedYear}
           setSelected={setSelectedYear}
         />
         <DropdownSelect
           label="Category"
-          options={categories}
+          options={categoryOptions}
           selected={selectedCategory}
           setSelected={setSelectedCategory}
         />
         <DropdownSelect
           label="Publisher"
-          options={publishers}
+          options={publisherOptions}
           selected={selectedPublisher}
           setSelected={setSelectedPublisher}
         />

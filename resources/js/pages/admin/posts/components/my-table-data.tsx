@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import usePermission from '@/hooks/use-permission';
 import useTranslation from '@/hooks/use-translation';
 import { Link, router, usePage } from '@inertiajs/react';
-import { ArrowUpDown, EditIcon, ScanEyeIcon, SquareArrowOutUpRightIcon } from 'lucide-react';
+import { ArrowUpDown, EditIcon, Paperclip, ScanEyeIcon } from 'lucide-react';
 import { useState } from 'react';
 
 const MyTableData = () => {
@@ -53,7 +53,8 @@ const MyTableData = () => {
                             <TableHead className="w-[50px]">{t('No')}</TableHead>
                             <TableHead className="text-left">{t('Action')}</TableHead>
                             <TableHead>{t('Image')}</TableHead>
-                            <TableHead>{t('Link')}</TableHead>
+                            <TableHead>{t('Attachment')}</TableHead>
+                            {/* <TableHead>{t('Link')}</TableHead> */}
                             <TableHead onClick={() => handleSort('title')}>
                                 <span className="flex cursor-pointer items-center">
                                     <ArrowUpDown size={16} /> {t('Title')}
@@ -84,7 +85,7 @@ const MyTableData = () => {
                                     <ArrowUpDown size={16} /> {t('Creator Name')}
                                 </span>
                             </TableHead>
-                             <TableHead onClick={() => handleSort('publisher_id')}>
+                            <TableHead onClick={() => handleSort('publisher_id')}>
                                 <span className="flex cursor-pointer items-center">
                                     <ArrowUpDown size={16} /> {t('Publisher Name')}
                                 </span>
@@ -181,7 +182,34 @@ const MyTableData = () => {
                                         />
                                     )}
                                 </TableCell>
-                                <TableCell className="text-center">
+                                <TableCell>
+                                    {item.upload_file && item.upload_file.length > 0 ? (
+                                        <div className="flex flex-col items-start gap-2">
+                                            {item.upload_file.map((file) => {
+                                                // Get the part of the string after the first underscore
+                                                const displayName = file.file_name.substring(file.file_name.indexOf('_') + 1);
+
+                                                return (
+                                                    <a
+                                                        key={file.id}
+                                                        href={`/assets/files/videos/${file.file_name}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center gap-2 text-sm text-blue-600 underline"
+                                                        title={displayName}
+                                                    >
+                                                        <Paperclip className="size-4 flex-shrink-0" />
+                                                        {/* Display the clean name */}
+                                                        <span className="truncate max-w-md">{displayName}</span>
+                                                    </a>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : (
+                                        '---'
+                                    )}
+                                </TableCell>
+                                {/* <TableCell className="text-center">
                                     {item.link ? (
                                         <a href={`${item.link}`} target="_blank">
                                             <MyTooltipButton variant="ghost" title={item.link} className="p-0 hover:bg-transparent">
@@ -201,7 +229,7 @@ const MyTableData = () => {
                                     ) : (
                                         '---'
                                     )}
-                                </TableCell>
+                                </TableCell> */}
                                 <TableCell>{item.title || '---'}</TableCell>
                                 <TableCell>{item.short_description || '---'}</TableCell>
                                 <TableCell>

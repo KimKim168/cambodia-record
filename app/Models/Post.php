@@ -49,6 +49,10 @@ class Post extends Model
     {
         return $this->hasMany(PostImage::class, 'post_id', 'id');
     }
+    public function upload_file()
+    {
+        return $this->hasMany(PostUploadFile::class, 'post_id', 'id');
+    }
     // public function videos()
     // {
     //     return $this->hasMany(PostVideoLink::class, 'post_id', 'id');

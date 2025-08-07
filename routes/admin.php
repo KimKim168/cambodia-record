@@ -79,9 +79,11 @@ Route::middleware('auth')->group(function () {
 
     // Post Route
     Route::resource('admin/posts', PostController::class);
-    Route::post('admin/posts/{post}/update', [PostController::class, 'update']);
+    // Route::post('admin/posts/{post}/update', [PostController::class, 'update']);
+    Route::post('admin/posts/{post}', [PostController::class, 'update'])->name('admin.posts.update');
     Route::post('admin/posts/{post}/update_status', [PostController::class, 'update_status']);
     Route::delete('admin/posts/images/{image}', [PostController::class, 'destroy_image']);
+    Route::delete('admin/posts/upload_file/{file}', [PostController::class, 'destroy_upload_file']);
     Route::get('admin/post_view_counts', [PostViewController::class, 'index']);
     Route::get('admin/post_view_counts/export', [PostViewController::class, 'export']);
 

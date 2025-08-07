@@ -136,7 +136,6 @@ class NokorTechController extends Controller
         $post = Post::find($id);
         $postCategories = PostCategory::where('status', 'active')->withCount('posts')->orderBy('order_index')->get();
         $relatedPosts = Post::with('category', 'images')->where('id', '!=', $id)->where('category_code', $post->category_code)->orderBy('id', 'desc')->limit(6)->get();
-
         return Inertia::render("nokor-tech/blogs/Show", [
             "post" => $post->load('images', 'category'),
             'postCategories' => $postCategories,
@@ -262,7 +261,7 @@ class NokorTechController extends Controller
         //     ->where('status', 'active') // Specify 'item_categories' table for status
         //     ->get();
         // $productListBanners = Banner::where('position_code', 'PRODUCT_SEARCH')->orderBy('order_index')->where('status', 'active')->get();
-        
+
         return Inertia::render('nokor-tech/shops/Show', [
             'shop' => Shop::find($id),
             'tableData' => $tableData,
