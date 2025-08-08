@@ -7,30 +7,26 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {
     AppWindowIcon,
+    BookmarkCheckIcon,
+    Earth,
     FilePenLineIcon,
-    FilesIcon,
     GalleryThumbnailsIcon,
     InfoIcon,
     Layers2Icon,
     LayoutDashboardIcon,
     LinkIcon,
-    Tally5Icon,
+    ListTodoIcon,
     MailsIcon,
+    NotebookPen,
     ReplaceAllIcon,
     ShapesIcon,
     ShieldCheckIcon,
-    BriefcaseBusinessIcon,
-    UserCogIcon,
-    SquareUserIcon,
-    UsersIcon,
-    MailCheckIcon,
-    ListTodoIcon,
     TagsIcon,
-    BookmarkCheckIcon,
-    UserRoundPen,
-    NotebookPen,
-    Earth,
+    Tally5Icon,
     TvMinimalPlayIcon,
+    UserCogIcon,
+    UserRoundPen,
+    UsersIcon,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -194,11 +190,17 @@ export function AppSidebar() {
                     icon: Earth,
                     url: '/admin/post_publishing_countries',
                 },
-                 {
+                {
                     title: t('Categories'),
                     permission: 'post view',
                     icon: Layers2Icon,
                     url: '/admin/post_categories',
+                },
+                {
+                    title: t('Types'),
+                    permission: 'type view',
+                    url: '/admin/types',
+                    icon: ShapesIcon,
                 },
                 {
                     title: t('View Counts'),
@@ -206,7 +208,6 @@ export function AppSidebar() {
                     icon: Tally5Icon,
                     url: '/admin/post_view_counts',
                 },
-               
             ],
         },
         {
@@ -398,12 +399,6 @@ export function AppSidebar() {
             permission: 'application_info view',
             url: '/admin/application_info',
             icon: InfoIcon,
-        },
-        {
-            title: t('Types'),
-            permission: 'type view',
-            url: '/admin/types',
-            icon: ShapesIcon,
         },
     ];
 

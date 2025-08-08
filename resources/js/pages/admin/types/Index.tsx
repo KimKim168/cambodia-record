@@ -18,6 +18,7 @@ const Index = () => {
         },
     ];
     const hasPermission = usePermission();
+    
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex max-w-[100vw] flex-wrap items-center justify-end gap-2">

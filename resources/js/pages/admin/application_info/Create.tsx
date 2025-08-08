@@ -148,6 +148,21 @@ export default function Create() {
                     <div className="col-span-6">
                         <FormField
                             control={form.control}
+                            name="copyright"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{t('Copyright')}</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={t('Copyright')} type="text" {...field} />
+                                    </FormControl>
+                                    <FormMessage>{errors.copyright && <div>{errors.copyright}</div>}</FormMessage>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                    {/* <div className="col-span-6">
+                        <FormField
+                            control={form.control}
                             name="name_kh"
                             render={({ field }) => (
                                 <FormItem>
@@ -159,9 +174,9 @@ export default function Create() {
                                 </FormItem>
                             )}
                         />
-                    </div>
+                    </div> */}
                 </div>
-                <FormField
+                {/*<FormField
                     control={form.control}
                     name="address"
                     render={({ field }) => (
@@ -233,7 +248,7 @@ export default function Create() {
                             )}
                         />
                     </div>
-                    {/* <div className="col-span-6">
+                     <div className="col-span-6">
                         <FormField
                             control={form.control}
                             name="landline_phone"
@@ -247,7 +262,7 @@ export default function Create() {
                                 </FormItem>
                             )}
                         />
-                    </div> */}
+                    </div> 
                     
                 </div>
 
@@ -283,7 +298,7 @@ export default function Create() {
                         />
                     </div>
                 </div>
-                {/* <div className="grid grid-cols-12 gap-4">
+                <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-6">
                         <FormField
                             control={form.control}
@@ -314,7 +329,7 @@ export default function Create() {
                             )}
                         />
                     </div>
-                </div> */}
+                </div>
                 <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-6">
                         <FormField
@@ -346,7 +361,7 @@ export default function Create() {
                             )}
                         />
                     </div>
-                </div>
+                </div>*/}
 
                 <FormField
                     control={form.control}

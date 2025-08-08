@@ -124,7 +124,7 @@ export default function Create({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 pt-10">
+            <form className="space-y-8 pt-10">
                 <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-6">
                         <FormField
@@ -241,7 +241,7 @@ export default function Create({
                 {setIsOpen && <MyDialogCancelButton onClick={() => setIsOpen(false)} />}
 
                 {!readOnly && (
-                    <Button disabled={processing} type="submit">
+                    <Button disabled={processing} type="button" onClick={form.handleSubmit(onSubmit)}>
                         {processing && (
                             <span className="size-6 animate-spin">
                                 <Loader />

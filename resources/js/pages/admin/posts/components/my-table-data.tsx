@@ -53,7 +53,7 @@ const MyTableData = () => {
                             <TableHead className="w-[50px]">{t('No')}</TableHead>
                             <TableHead className="text-left">{t('Action')}</TableHead>
                             <TableHead>{t('Image')}</TableHead>
-                            <TableHead>{t('Attachment')}</TableHead>
+                            {/* <TableHead>{t('Attachment')}</TableHead> */}
                             {/* <TableHead>{t('Link')}</TableHead> */}
                             <TableHead onClick={() => handleSort('title')}>
                                 <span className="flex cursor-pointer items-center">
@@ -92,7 +92,7 @@ const MyTableData = () => {
                             </TableHead>
                             <TableHead onClick={() => handleSort('publishing_countries_code')}>
                                 <span className="flex cursor-pointer items-center">
-                                    <ArrowUpDown size={16} /> {t('Publishing Country Code')}
+                                    <ArrowUpDown size={16} /> {t('Location Code')}
                                 </span>
                             </TableHead>
                             <TableHead onClick={() => handleSort('type')}>
@@ -100,11 +100,11 @@ const MyTableData = () => {
                                     <ArrowUpDown size={16} /> {t('Type')}
                                 </span>
                             </TableHead>
-                            <TableHead onClick={() => handleSort('total_view_counts')}>
+                            {/* <TableHead onClick={() => handleSort('total_view_counts')}>
                                 <span className="flex cursor-pointer items-center">
                                     <ArrowUpDown size={16} /> {t('Total View')}
                                 </span>
-                            </TableHead>
+                            </TableHead> */}
                             <TableHead onClick={() => handleSort('post_date')}>
                                 <span className="flex cursor-pointer items-center">
                                     <ArrowUpDown size={16} /> {t('Post Date')}
@@ -182,7 +182,7 @@ const MyTableData = () => {
                                         />
                                     )}
                                 </TableCell>
-                                <TableCell>
+                                {/* <TableCell>
                                     {item.upload_file && item.upload_file.length > 0 ? (
                                         <div className="flex flex-col items-start gap-2">
                                             {item.upload_file.map((file) => {
@@ -199,7 +199,7 @@ const MyTableData = () => {
                                                         title={displayName}
                                                     >
                                                         <Paperclip className="size-4 flex-shrink-0" />
-                                                        {/* Display the clean name */}
+                                                       
                                                         <span className="truncate max-w-md">{displayName}</span>
                                                     </a>
                                                 );
@@ -208,7 +208,7 @@ const MyTableData = () => {
                                     ) : (
                                         '---'
                                     )}
-                                </TableCell>
+                                </TableCell> */}
                                 {/* <TableCell className="text-center">
                                     {item.link ? (
                                         <a href={`${item.link}`} target="_blank">
@@ -250,9 +250,9 @@ const MyTableData = () => {
                                 <TableCell>{item.publisher?.name || '---'}</TableCell>
                                 <TableCell>{item.publishing_countries_code || '---'}</TableCell>
                                 <TableCell>{item.type || '---'}</TableCell>
-                                <TableCell>
+                                {/* <TableCell>
                                     {item.total_view_counts ? <span className="flex items-center gap-1">{item.total_view_counts}</span> : '---'}
-                                </TableCell>
+                                </TableCell> */}
                                 <TableCell className="whitespace-nowrap">
                                     {item.post_date
                                         ? new Date(item.post_date).toLocaleDateString('en-UK', {

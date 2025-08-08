@@ -47,7 +47,7 @@ const Post = () => {
 
     return (
         <CamboLayout>
-            <div className="mt-8">
+            <div className="mt-6">
                 <Search />
             </div>
             <StyledWrapper className="font-kantumruy mx-auto grid max-w-screen-xl grid-cols-1 gap-4 px-4 sm:grid-cols-2 md:grid-cols-3 xl:px-0">
