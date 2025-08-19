@@ -58,9 +58,7 @@ export default function AdvancedSearchButton() {
   // 1. Get all filter data from the backend via Inertia props.
   const { types, publisher, category, uniquePostYears } = usePage().props;
 
-  // 2. Prepare the options for the dropdowns.
-  //    - Use optional chaining (?.) in case the data is not available.
-  //    - The `uniquePostYears` array can be used directly.
+
   const typeOptions = types?.map(type => type.label);
   const publisherOptions = publisher?.map(p => p.name);
   const categoryOptions = category?.map(c => c.name);
@@ -68,16 +66,21 @@ export default function AdvancedSearchButton() {
   // 3. Set up state for each selected filter.
   const [selectedType, setSelectedType] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedPublisher, setSelectedPublisher] = useState('');
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="max-w-3xl">
       <div className="mb-4 flex cursor-pointer items-center space-x-2 text-base text-black underline underline-offset-2">
         <p>Advanced Search</p>
         <ArrowDown className="w-4 h-4" />
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className=" grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+        <DropdownSelect
+          label="Publisher"
+          options={publisherOptions}
+          selected={selectedPublisher}
+          setSelected={setSelectedPublisher}
+        />
         <DropdownSelect
           label="Type"
           options={typeOptions}
@@ -86,23 +89,11 @@ export default function AdvancedSearchButton() {
         />
         <DropdownSelect
           label="Year"
-          // Use uniquePostYears directly as it's already an array of years
           options={uniquePostYears} 
           selected={selectedYear}
           setSelected={setSelectedYear}
         />
-        <DropdownSelect
-          label="Category"
-          options={categoryOptions}
-          selected={selectedCategory}
-          setSelected={setSelectedCategory}
-        />
-        <DropdownSelect
-          label="Publisher"
-          options={publisherOptions}
-          selected={selectedPublisher}
-          setSelected={setSelectedPublisher}
-        />
+        
       </div>
     </div>
   );

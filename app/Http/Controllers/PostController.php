@@ -6,6 +6,8 @@ use App\Helpers\ImageHelper;
 use App\Helpers\FileHelper;
 use App\Models\Creator;
 use App\Models\Link;
+use App\Models\Location;
+use App\Models\People;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\PostImage;
@@ -20,7 +22,7 @@ use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
 // Import your correct model name
 use App\Models\PostUploadFile;
-
+use App\Models\Topic;
 
 class PostController extends Controller implements HasMiddleware
 {
@@ -44,7 +46,7 @@ class PostController extends Controller implements HasMiddleware
         $query = Post::query();
 
         // Eager load your correct relationship name 'upload_file'
-        $query->with('created_by', 'updated_by', 'images', 'category', 'creator', 'publisher', 'source_detail', 'publishing_country', 'upload_file');
+        $query->with('created_by', 'updated_by', 'images', 'category', 'creator', 'publisher', 'location', 'people', 'topic','source_detail', 'publishing_country', 'upload_file');
 
         if ($status) {
             $query->where('status', $status);
@@ -71,9 +73,13 @@ class PostController extends Controller implements HasMiddleware
             'links' => Link::orderBy('title')->where('status', 'active')->get(),
             'postCategories' => PostCategory::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postCreators' => Creator::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postLocations' => Location::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postTopics' => Topic::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postPeople' => People::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPublishers' => Publisher::where('status', 'active')->orderBy('id', 'desc')->get(),
             'publishingCountry' => PublishingCountry::where('status', 'active')->orderBy('id', 'desc')->get(),
             'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
+            'typePeople' => Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id', 'desc')->get(),
         ]);
     }
 
@@ -156,8 +162,12 @@ class PostController extends Controller implements HasMiddleware
             'postCategories' => PostCategory::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postCreators' => Creator::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPublishers' => Publisher::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postLocations' => Location::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postTopics' => Topic::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postPeople' => People::where('status', 'active')->orderBy('id', 'desc')->get(),
             'publishingCountry' => PublishingCountry::where('status', 'active')->orderBy('id', 'desc')->get(),
             'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
+            'typePeople' => Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id', 'desc')->get(),
             'readOnly' => true,
         ]);
     }
@@ -170,8 +180,12 @@ class PostController extends Controller implements HasMiddleware
             'postCategories' => PostCategory::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postCreators' => Creator::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPublishers' => Publisher::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postLocations' => Location::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postTopics' => Topic::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postPeople' => People::where('status', 'active')->orderBy('id', 'desc')->get(),
             'publishingCountry' => PublishingCountry::where('status', 'active')->orderBy('id', 'desc')->get(),
             'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
+            'typePeople' => Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id', 'desc')->get(),
         ]);
     }
 

@@ -2,12 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BannerPosition;
 use Inertia\Inertia;
-use App\Models\Banner;
-use App\Models\Creator;
-use App\Models\Item;
-use App\Models\Page;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\Publisher;
@@ -17,28 +12,37 @@ use Illuminate\Http\Request;
 
 class CambodiaRecordController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $postCategories = PostCategory::where('status', 'active')->orderBy('order_index')->get();
-        $types = Type::where('status', 'active')->orderBy('id', 'desc')->get();
+        $perPage = $request->input('perPage', 6);
 
-        $category = PostCategory::where('status', 'active')->orderBy('id', 'desc')->get();
-        $publisher = Publisher::where('status', 'active')->orderBy('id', 'desc')->get();
+        $categoriesByOrderIndex = PostCategory::where('status', 'active')->orderBy('order_index')->get();
+        $categoriesById = PostCategory::where('status', 'active')->orderBy('id', 'desc')->get();
+        $types = Type::where('status', 'active')->orderBy('id', 'desc')->get();
+        $publishers = Publisher::where('status', 'active')->orderBy('id', 'desc')->get();
+
         $uniquePostYears = Post::where('status', 'active')
             ->select(DB::raw('YEAR(post_date) as year'))
             ->distinct()
-            ->orderBy('year', 'desc') // Order by the year itself
+            ->orderBy('year', 'desc')
             ->pluck('year');
 
-        // return $uniquePostYears;
+        $tableData = Post::with('images', 'category', 'creator', 'upload_file')
+            ->where('status', 'active')
+            ->orderBy('id', 'desc')
+            ->paginate(6)  
+            ->onEachSide(1);
+        // return $tableData;
         return Inertia::render('combodiaRecord/home/Index', [
-            'categories' => $postCategories,
+            'tableData' => $tableData,
+            'categoriesByOrderIndex' => $categoriesByOrderIndex,
+            'categoriesById' => $categoriesById,
             'types' => $types,
-            'category' => $category,
-            'publisher' => $publisher,
+            'publishers' => $publishers,
             'uniquePostYears' => $uniquePostYears,
         ]);
     }
+
     public function post(Request $request)
     {
         // 1. Fetch all data needed for the filters upfront.
@@ -60,8 +64,8 @@ class CambodiaRecordController extends Controller
         $publisher_id = $request->query('publisher_id');
 
         // 3. Start building the query.
-        $query = Post::query();
-        $query->with('images', 'category', 'creator', 'upload_file');
+        $query = Post::with('images', 'category', 'creator', 'upload_file')
+            ->orderBy('id', 'desc');
 
         // 4. Apply filters if they exist.
         if ($category_code) {
@@ -77,6 +81,8 @@ class CambodiaRecordController extends Controller
         if ($search) {
             $query->where(function ($sub_query) use ($search) {
                 $sub_query->where('title', 'LIKE', "%{$search}%");
+                // Optionally add more fields
+                // ->orWhere('description', 'LIKE', "%{$search}%");
             });
         }
 
@@ -93,17 +99,18 @@ class CambodiaRecordController extends Controller
         }
 
         // 5. Paginate the final results.
-        $tableData = $query->paginate(perPage: $perPage)->onEachSide(1);
+        $tableData = $query->paginate($perPage)->onEachSide(1);
 
         // 6. Return the view with both the results and the filter data.
         return Inertia::render('combodiaRecord/home/Post', [
             'tableData' => $tableData,
             'types' => $types,
-            'publisher' => $publishers,
-            'category' => $categories, // Pass categories to the view
+            'publishers' => $publishers,
+            'categories' => $categories, // Pass categories to the view
             'uniquePostYears' => $uniquePostYears,
         ]);
     }
+
 
 
     public function detail($id, Request $request)

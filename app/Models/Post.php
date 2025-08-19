@@ -16,13 +16,24 @@ class Post extends Model
         return $this->belongsTo(PostCategory::class, 'category_code', 'code');
     }
 
-    // public function creator()
-    // {
-    //     return $this->belongsTo(Creator::class, 'creator_code', 'code');
-    // }
      public function creator()
     {
         return $this->belongsTo(Creator::class, 'creator_id', 'id');
+    }
+
+     public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id', 'id');
+    }
+
+     public function topic()
+    {
+        return $this->belongsTo(Topic::class, 'topic_id', 'id');
+    }
+
+     public function people()
+    {
+        return $this->belongsTo(People::class, 'people_id', 'id');
     }
 
      public function publisher()

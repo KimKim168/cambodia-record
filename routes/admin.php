@@ -20,12 +20,14 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemModelController;
 use App\Http\Controllers\ItemColorController;
 use App\Http\Controllers\LinkController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MessageInquiryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PagePositionController;
 use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\PeopleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PhoneCompanyController;
 use App\Http\Controllers\PositionController;
@@ -40,6 +42,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\TeamCategoryController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TopicController;
 use App\Http\Controllers\TypeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VideoController;
@@ -206,6 +209,24 @@ Route::middleware('auth')->group(function () {
     Route::post('admin/post_creators/{post_creator}/update', [CreatorController::class, 'update']);
     Route::get('admin/all_page_creators', [CreatorController::class, 'all_page_creators']);
     Route::post('admin/post_creators/{post_creator}/update_status', [CreatorController::class, 'update_status']);
+
+    // Post location Route
+    Route::resource('admin/post_locations', LocationController::class);
+    Route::post('admin/post_locations/{post_location}/update', [LocationController::class, 'update']);
+    Route::get('admin/all_post_locations', [LocationController::class, 'all_post_locations']);
+    Route::post('admin/post_locations/{post_location}/update_status', [LocationController::class, 'update_status']);
+    
+    // Post topic Route
+    Route::resource('admin/post_topics', TopicController::class);
+    Route::post('admin/post_topics/{post_topic}/update', [TopicController::class, 'update']);
+    Route::get('admin/all_page_topics', [TopicController::class, 'all_page_topics']);
+    Route::post('admin/post_topics/{post_topic}/update_status', [TopicController::class, 'update_status']);
+
+    // Post people Route
+    Route::resource('admin/post_people', PeopleController::class);
+    Route::post('admin/post_people/{post_people}/update', [PeopleController::class, 'update']);
+    Route::get('admin/all_page_people', action: [PeopleController::class, 'all_page_people']);
+    Route::post('admin/post_people/{post_people}/update_status', [PeopleController::class, 'update_status']);
 
     // Post Creator Route
     Route::resource('admin/post_publishing_countries', PublishingCountryController::class);

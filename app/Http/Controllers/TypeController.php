@@ -38,7 +38,6 @@ class TypeController extends Controller
         }
 
         $tableData = $query->paginate(perPage: 10)->onEachSide(1);
-
         return Inertia::render('admin/types/Index', [
             'tableData' => $tableData,
         ]);

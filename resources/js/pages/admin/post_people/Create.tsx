@@ -1,26 +1,24 @@
 import MyDialogCancelButton from '@/components/my-dialog-cancel-button';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ProgressWithValue } from '@/components/ui/progress-with-value';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import usePermission from '@/hooks/use-permission';
 import useTranslation from '@/hooks/use-translation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm as inertiaUseForm } from '@inertiajs/react';
+import { useForm as inertiaUseForm, usePage } from '@inertiajs/react';
+import axios from 'axios';
 import { Loader } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 
 const formSchema = z.object({
-    type: z.string().min(1).max(255),
-    label: z.string().min(1).max(255),
-    type_of: z.string().max(255).optional(),
+    name: z.string().min(1).max(255),
+    type: z.string().optional(),
     status: z.string().max(255).optional(),
-    short_description: z.string().max(500).optional(),
-    short_description_kh: z.string().max(500).optional(),
 });
 
 export default function Create({
@@ -34,7 +32,6 @@ export default function Create({
 }) {
     // ===== Start Our Code =====
     const { t } = useTranslation();
-    const hasPermission = usePermission();
     const [files, setFiles] = useState<File[] | null>(null);
     const [filesBanner, setFilesBanner] = useState<File[] | null>(null);
 
@@ -52,14 +49,33 @@ export default function Create({
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            type: editData?.type || '',
-            label: editData?.label || '',
-            type_of: editData?.type_of || '',
+            name: editData?.name || '',
+            type: editData?.type || 'citizens',
             status: editData?.status || 'active',
-            short_description: editData?.short_description || '',
-            short_description_kh: editData?.short_description_kh || '',
         },
     });
+    const [parentsTableData, setParentsTableData] = useState([]);
+    const [isGettingParentsTableData, setIsGettingParentsTableData] = useState(false);
+    const [error, setError] = useState(null);
+    const { types } = usePage().props;
+    useEffect(() => {
+        setIsGettingParentsTableData(true);
+        getParentsTableData();
+        // Fetch data from the Laravel API route
+    }, []);
+
+    function getParentsTableData() {
+        axios
+            .get('/admin/all_page_topics')
+            .then((response) => {
+                console.log(response.data);
+                setIsGettingParentsTableData(false);
+                setParentsTableData(response.data);
+            })
+            .catch((error) => {
+                setError(error);
+            });
+    }
 
     const { post, data, progress, processing, transform, errors } = inertiaUseForm();
 
@@ -76,7 +92,7 @@ export default function Create({
                 banner: filesBanner ? filesBanner[0] : null,
             }));
             if (editData?.id) {
-                post('/admin/types/' + editData.id + '/update', {
+                post('/admin/post_people/' + editData?.id + '/update', {
                     preserveScroll: true,
                     onSuccess: (page) => {
                         setFiles(null);
@@ -92,9 +108,13 @@ export default function Create({
                             description: 'Failed to update.' + JSON.stringify(e, null, 2),
                         });
                     },
+                    onFinish: () => {
+                        setIsGettingParentsTableData(true);
+                        getParentsTableData();
+                    },
                 });
             } else {
-                post('/admin/types', {
+                post('/admin/post_people', {
                     preserveScroll: true,
                     onSuccess: (page) => {
                         form.reset();
@@ -111,6 +131,10 @@ export default function Create({
                             description: 'Failed to create.' + JSON.stringify(e, null, 2),
                         });
                     },
+                    onFinish: () => {
+                        setIsGettingParentsTableData(true);
+                        getParentsTableData();
+                    },
                 });
             }
         } catch (error) {
@@ -120,7 +144,7 @@ export default function Create({
             });
         }
     }
-    // ===== End Our Code =====
+    const hasPermission = usePermission();
 
     return (
         <Form {...form}>
@@ -129,58 +153,14 @@ export default function Create({
                     <div className="col-span-6">
                         <FormField
                             control={form.control}
-                            name="type"
+                            name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>{t('Type')}</FormLabel>
+                                    <FormLabel>{t('People')}</FormLabel>
                                     <FormControl>
-                                        <Input placeholder={t('Name')} type="text" {...field} />
+                                        <Input placeholder={t('name')} type="text" {...field} />
                                     </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                    <div className="col-span-6">
-                        <FormField
-                            control={form.control}
-                            name="label"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{t('Label')}</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder={t('Label')} type="text" {...field} />
-                                    </FormControl>
-                                    <FormMessage>{errors.label && <div>{errors.label}</div>}</FormMessage>
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-12 gap-4">
-                    <div className="col-span-6">
-                        <FormField
-                            control={form.control}
-                            name="type_of"
-                            render={({ field }) => (
-                                <FormItem key={field.value}>
-                                    <FormLabel>{t('Type Of')}</FormLabel>
-                                    <Select key={field.value} onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder={t('Select')} />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {hasPermission('page view') && <SelectItem value="page">{t('Page')}</SelectItem>}
-                                            {hasPermission('post view') && <SelectItem value="post">{t('Post')}</SelectItem>}
-                                            {hasPermission('banner view') && <SelectItem value="banner">{t('Banner')}</SelectItem>}
-                                            {hasPermission('link view') && <SelectItem value="link">{t('Link')}</SelectItem>}
-                                            {hasPermission('post view') && <SelectItem value="people">{t('People')}</SelectItem>}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage>{errors.type_of && <div>{errors.type_of}</div>}</FormMessage>
+                                    <FormMessage>{errors.name && <div>{errors.name}</div>}</FormMessage>
                                 </FormItem>
                             )}
                         />
@@ -209,34 +189,37 @@ export default function Create({
                         />
                     </div>
                 </div>
-
-                {/* <FormField
-                    control={form.control}
-                    name="short_description"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>{t('Short Description')}</FormLabel>
-                            <FormControl>
-                                <AutosizeTextarea placeholder={t("Short Description")} className="resize-none" {...field} />
-                            </FormControl>
-                            <FormMessage>{errors.short_description && <div>{errors.short_description}</div>}</FormMessage>
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="short_description_kh"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>{t('Short Description Khmer')}</FormLabel>
-                            <FormControl>
-                                <AutosizeTextarea placeholder={t("Short Description Khmer")} className="resize-none" {...field} />
-                            </FormControl>
-                            <FormMessage>{errors.short_description_kh && <div>{errors.short_description_kh}</div>}</FormMessage>
-                        </FormItem>
-                    )}
-                /> */}
+                <div>
+                    <div className="col-span-12">
+                        <FormField
+                            control={form.control}
+                            name="type"
+                            render={({ field }) => (
+                                <FormItem key={field.value}>
+                                    <FormLabel>{t('Type')}</FormLabel>
+                                    <div className="flex items-center justify-between gap-2">
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder={t('Select Type')} />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {types?.map((typeObject) => (
+                                                    <SelectItem key={typeObject.id + typeObject.type} value={typeObject.type}>
+                                                        {typeObject.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <FormDescription>{t('Choose type for external content.')}</FormDescription>
+                                    <FormMessage>{errors.type && <div>{errors.type}</div>}</FormMessage>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                </div>
 
                 {progress && <ProgressWithValue value={progress.percentage} position="start" />}
                 {setIsOpen && <MyDialogCancelButton onClick={() => setIsOpen(false)} />}

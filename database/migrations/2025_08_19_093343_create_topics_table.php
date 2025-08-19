@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('publishing_countries', function (Blueprint $table) {
+        Schema::create('topics', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('code')->unique();
+            $table->string('topic_name');
             $table->string('status')->nullable()->default('active');
 
             $table->unsignedBigInteger('created_by')->nullable();
@@ -39,10 +38,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('publishing_countries', function (Blueprint $table) {
+        Schema::table('topics', function (Blueprint $table) {
             $table->dropForeign(['created_by']);
             $table->dropForeign(['updated_by']);
         });
-        Schema::dropIfExists('publishing_countries');
+        Schema::dropIfExists('topics');
     }
 };

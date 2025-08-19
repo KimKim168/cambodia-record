@@ -92,7 +92,7 @@ const MyTableData = () => {
                             </TableHead>
                             <TableHead onClick={() => handleSort('publishing_countries_code')}>
                                 <span className="flex cursor-pointer items-center">
-                                    <ArrowUpDown size={16} /> {t('Location Code')}
+                                    <ArrowUpDown size={16} /> {t('Publishing Countrys')}
                                 </span>
                             </TableHead>
                             <TableHead onClick={() => handleSort('type')}>
