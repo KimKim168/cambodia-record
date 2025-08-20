@@ -18,10 +18,10 @@ class SubjectController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:heading view', only: ['index', 'show']),
-            new Middleware('permission:heading create', only: ['create', 'store']),
-            new Middleware('permission:heading update', only: ['edit', 'update', 'update_status']),
-            new Middleware('permission:heading delete', only: ['destroy', 'destroy_image']),
+            new Middleware('permission:post view', only: ['index', 'show']),
+            new Middleware('permission:post create', only: ['create', 'store']),
+            new Middleware('permission:post update', only: ['edit', 'update', 'update_status']),
+            new Middleware('permission:post delete', only: ['destroy', 'destroy_image']),
         ];
     }
     /**
