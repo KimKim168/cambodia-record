@@ -13,7 +13,7 @@ use Inertia\Inertia;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
 
-class SUbjectController extends Controller implements HasMiddleware
+class SubjectController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
