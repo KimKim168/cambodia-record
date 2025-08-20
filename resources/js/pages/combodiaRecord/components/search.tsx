@@ -3,18 +3,13 @@ import { router } from '@inertiajs/react';
 import AdvancedSearch from "./advanced-search";
 
 const Search = () => {
-    // 1. State to store the user's search input
     const [searchTerm, setSearchTerm] = useState('');
 
-    // 2. Function to handle the search submission
     const handleSearch = (e) => {
-        e.preventDefault(); // Prevents the page from doing a full reload
+        e.preventDefault(); 
 
-        // 3. Use Inertia's router to make a GET request to your 'post' method's URL.
-        // This sends the search term as a query parameter (e.g., /posts?search=your_term)
-        // Make sure to replace '/cambodia-record/posts' with the actual URL for your post list page.
         router.get('/posts', { search: searchTerm }, {
-            preserveState: true, // Keeps the search term in the input box after searching
+            preserveState: true, 
             replace: true,
         });
     };
@@ -40,9 +35,9 @@ const Search = () => {
                     {/* You can add a submit button inside the form if you want */}
                     {/* <button type="submit" className="absolute top-1/2 right-3 -translate-y-1/2">Search</button> */}
                 </div>
-                <div className="max-w-xl mx-auto">
+                {/* <div className="max-w-xl mx-auto">
                     <AdvancedSearch/>
-                </div>
+                </div> */}
             </form>
             <div className="mx-auto my-8 max-w-screen-xl border-t-1 border-gray-300"></div>
         </div>

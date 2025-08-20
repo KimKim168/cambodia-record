@@ -1,10 +1,8 @@
+import MyAddNewButton from '@/components/my-add-new-button';
 import MyDialogCloseButton from '@/components/my-dialog-close-button';
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import Create from '../Create';
-import MyAddNewButton from '@/components/my-add-new-button';
 import useTranslation from '@/hooks/use-translation';
 const AddNewButton = () => {
     const { t } = useTranslation();
@@ -12,7 +10,7 @@ const AddNewButton = () => {
     return (
         <Dialog modal={false} open={isOpen}>
             <DialogTrigger asChild>
-               <MyAddNewButton onClick={() => setIsOpen(true)}/>
+                <MyAddNewButton onClick={() => setIsOpen(true)} />
             </DialogTrigger>
             {isOpen && <div className="fixed inset-0 z-40 bg-black/80" />}
             {/* Custom dark background */}

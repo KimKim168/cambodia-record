@@ -2,13 +2,14 @@ import DeleteButton from '@/components/delete-button';
 import MyImageGallery from '@/components/my-image-gallery';
 import MyNoData from '@/components/my-no-data';
 import { MyTooltipButton } from '@/components/my-tooltip-button';
+import MyUpdateFileStatusButton from '@/components/my-update-file-status-button';
 import MyUpdateStatusButton from '@/components/my-update-status-button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import usePermission from '@/hooks/use-permission';
 import useTranslation from '@/hooks/use-translation';
 import { Link, router, usePage } from '@inertiajs/react';
-import { ArrowUpDown, EditIcon, Paperclip, ScanEyeIcon } from 'lucide-react';
+import { ArrowUpDown, EditIcon, ScanEyeIcon } from 'lucide-react';
 import { useState } from 'react';
 
 const MyTableData = () => {
@@ -70,14 +71,19 @@ const MyTableData = () => {
                                     <ArrowUpDown size={16} /> {t('Status')}
                                 </span>
                             </TableHead>
-                            <TableHead onClick={() => handleSort('subject')}>
+                            <TableHead onClick={() => handleSort('file_status')}>
+                                <span className="flex cursor-pointer items-center">
+                                    <ArrowUpDown size={16} /> {t('File Status')}
+                                </span>
+                            </TableHead>
+                            <TableHead onClick={() => handleSort('subject_id')}>
                                 <span className="flex cursor-pointer items-center">
                                     <ArrowUpDown size={16} /> {t('Subject')}
                                 </span>
                             </TableHead>
                             <TableHead onClick={() => handleSort('category_code')}>
                                 <span className="flex cursor-pointer items-center">
-                                    <ArrowUpDown size={16} /> {t('Category Code')}
+                                    <ArrowUpDown size={16} /> {t('Source')}
                                 </span>
                             </TableHead>
                             <TableHead onClick={() => handleSort('creator_id')}>
@@ -244,7 +250,20 @@ const MyTableData = () => {
                                         <span className="capitalize">{item.status}</span>
                                     )}
                                 </TableCell>
-                                <TableCell>{item.subject || '---'}</TableCell>
+                                <TableCell>
+                                    {hasPermission('post update') ? (
+                                        <MyUpdateFileStatusButton
+                                            id={item.id}
+                                            pathName="/admin/posts/upload_file"
+                                            currentStatus={item.file_status}
+                                            statuses={['public', 'private']}
+                                        />
+                                    ) : (
+                                        <span className="capitalize">{item.file_status}</span>
+                                    )}
+                                
+                                </TableCell>
+                                <TableCell>{item.subject?.title || '---'}</TableCell>
                                 <TableCell>{item.category_code || '---'}</TableCell>
                                 <TableCell>{item.creator?.name || '---'}</TableCell>
                                 <TableCell>{item.publisher?.name || '---'}</TableCell>

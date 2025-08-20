@@ -5,7 +5,7 @@ import PostRelated from '../components/post-related';
 import CamboLayout from '../layout/CamboLayout';
 
 const Detail = () => {
-    const { post, relatedPosts } = usePage().props;
+    const { post, relatedPosts, auth } = usePage().props;
     const formatDate = (dateString: string | null) => {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);
@@ -47,10 +47,9 @@ const Detail = () => {
                                     <span className="text-base leading-relaxed">Publishing country :</span> {post?.publishing_country?.name || 'N/A'}
                                 </li>
                                 <li>
-                                    <div className="flex flex-col gap-3">
+                                    {/* <div className="flex flex-col gap-3">
                                         {post?.upload_file?.map((file) => {
                                             const displayName = file.file_name.substring(file.file_name.indexOf('_') + 1);
-
                                             return (
                                                 <a
                                                     key={file.id}
@@ -68,6 +67,38 @@ const Detail = () => {
                                                 </a>
                                             );
                                         })}
+                                    </div> */}
+                                    <div className="flex flex-col gap-3">
+                                        {post?.file_status === 'public' || (post?.file_status === 'private' && auth?.user) ? (
+                                            post?.upload_file?.length > 0 ? (
+                                                post?.upload_file.map((file) => {
+                                                    const displayName = file.file_name.substring(file.file_name.indexOf('_') + 1);
+
+                                                    return (
+                                                        <a
+                                                            key={file.id}
+                                                            href={`/assets/files/videos/${file.file_name}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="group flex items-center gap-3 rounded-lg border bg-slate-50 p-3 transition-all hover:border-blue-500 hover:bg-blue-50"
+                                                        >
+                                                            <div className="flex-shrink-0 rounded-md bg-slate-200 p-2 group-hover:bg-blue-100">
+                                                                <Paperclip className="h-5 w-5 text-slate-600 group-hover:text-blue-600" />
+                                                            </div>
+                                                            <div className="flex-grow overflow-hidden">
+                                                                <p className="truncate font-medium text-slate-800 group-hover:text-blue-800">
+                                                                    {displayName}
+                                                                </p>
+                                                            </div>
+                                                        </a>
+                                                    );
+                                                })
+                                            ) : (
+                                                <p>No files available</p>
+                                            )
+                                        ) : (
+                                            <p></p>
+                                        )}
                                     </div>
                                 </li>
                                 {/* <li className="font-kantumruy text-base leading-relaxed text-gray-800">

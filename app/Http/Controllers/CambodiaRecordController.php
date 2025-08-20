@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Location;
 use Inertia\Inertia;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\Publisher;
+use App\Models\Topic;
 use App\Models\Type;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -20,6 +22,12 @@ class CambodiaRecordController extends Controller
         $categoriesById = PostCategory::where('status', 'active')->orderBy('id', 'desc')->get();
         $types = Type::where('status', 'active')->orderBy('id', 'desc')->get();
         $publishers = Publisher::where('status', 'active')->orderBy('id', 'desc')->get();
+        $location = Location::where('status', 'active')->orderBy('id', 'desc')->get();
+        $topic = Topic::where('status', 'active')->orderBy('id', 'desc')->get();
+        $typePeople = Type::where('type_of', 'people')
+            ->where('status', 'active')
+            ->orderBy('id', 'desc')
+            ->get();
 
         $uniquePostYears = Post::where('status', 'active')
             ->select(DB::raw('YEAR(post_date) as year'))
@@ -30,9 +38,9 @@ class CambodiaRecordController extends Controller
         $tableData = Post::with('images', 'category', 'creator', 'upload_file')
             ->where('status', 'active')
             ->orderBy('id', 'desc')
-            ->paginate(6)  
+            ->paginate(6)
             ->onEachSide(1);
-        // return $tableData;
+        // return $typePeople;
         return Inertia::render('combodiaRecord/home/Index', [
             'tableData' => $tableData,
             'categoriesByOrderIndex' => $categoriesByOrderIndex,
@@ -40,6 +48,9 @@ class CambodiaRecordController extends Controller
             'types' => $types,
             'publishers' => $publishers,
             'uniquePostYears' => $uniquePostYears,
+            'location' => $location,
+            'topic' => $topic,
+            'typePeople' => $typePeople,
         ]);
     }
 
@@ -117,7 +128,7 @@ class CambodiaRecordController extends Controller
     {
         $postCategories = PostCategory::where('status', 'active')->orderBy('order_index')->get();
         $query = Post::query();
-        $query->with(['images', 'category', 'creator', 'publisher', 'publishing_country', 'upload_file']);
+        $query->with(['images', 'category', 'creator', 'publisher', 'publishing_country', 'upload_file', ]);
         $post = $query->find($id);
         $relatedPosts = Post::with('category', 'images')->where('id', '!=', $id)->where('category_code', $post->category_code)->orderBy('id', 'desc')->limit(6)->get();
         // return $post;

@@ -47,10 +47,11 @@ class PeopleController extends Controller
         }
         $tableData = $query->paginate(perPage: 10)->onEachSide(1);
 
-        $types = Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id','desc')->get();
+        $typePeople = Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id','desc')->get();
+       
         return Inertia::render('admin/post_people/Index', [
             'tableData' => $tableData,
-            'types' => $types,
+            'typePeople' => $typePeople,
         ]);
     }
 
@@ -68,13 +69,13 @@ class PeopleController extends Controller
      public function create(Request $request)
     {
         return Inertia::render('admin/post_people/Create', props: [
-            'types' => Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id', 'desc')->get(),
+            'typePeople' => Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id', 'desc')->get(),
         ]);
     }
     public function show(People $post_people)
     {
         return Inertia::render('admin/post_people/Create', [
-            'types' => Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id', 'desc')->get(),
+            'typePeople' => Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id', 'desc')->get(),
             
         ]);
     }

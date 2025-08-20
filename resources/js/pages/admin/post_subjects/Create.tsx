@@ -1,28 +1,26 @@
-import MySpinner from '@/components/customized/spinner/my-spinner';
 import MyDialogCancelButton from '@/components/my-dialog-cancel-button';
 import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
 import { Button } from '@/components/ui/button';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from '@/components/ui/file-upload';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ProgressWithValue } from '@/components/ui/progress-with-value';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import useTranslation from '@/hooks/use-translation';
-import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm as inertiaUseForm } from '@inertiajs/react';
-import axios from 'axios';
-import { Check, ChevronsUpDown, CloudUpload, Loader, Paperclip } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { CloudUpload, Loader, Paperclip } from 'lucide-react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 
 const formSchema = z.object({
-    topic_name: z.string().min(1).max(255),
+    title: z.string().min(1).max(255),
+    title_kh: z.string().max(255).optional(),
     status: z.string().max(255).optional(),
+    short_description: z.string().max(500).optional(),
+    short_description_kh: z.string().max(500).optional(),
 });
 
 export default function Create({
@@ -36,49 +34,17 @@ export default function Create({
 }) {
     // ===== Start Our Code =====
     const { t } = useTranslation();
-    const [files, setFiles] = useState<File[] | null>(null);
-    const [filesBanner, setFilesBanner] = useState<File[] | null>(null);
-
-    const dropZoneConfig = {
-        maxFiles: 100,
-        maxSize: 1024 * 1024 * 4,
-        multiple: false,
-        accept: {
-            'image/jpeg': ['.jpeg', '.jpg'],
-            'image/png': ['.png'],
-            'image/gif': ['.gif'],
-            'image/webp': ['.webp'],
-        },
-    };
+   
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            topic_name: editData?.topic_name || '',
+            title: editData?.title || '',
+            title_kh: editData?.title_kh || '',
             status: editData?.status || 'active',
+            short_description: editData?.short_description || '',
+            short_description_kh: editData?.short_description_kh || '',
         },
     });
-    const [parentsTableData, setParentsTableData] = useState([]);
-    const [isGettingParentsTableData, setIsGettingParentsTableData] = useState(false);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        setIsGettingParentsTableData(true);
-        getParentsTableData();
-        // Fetch data from the Laravel API route
-    }, []);
-
-    function getParentsTableData() {
-        axios
-            .get('/admin/all_page_topics')
-            .then((response) => {
-                console.log(response.data);
-                setIsGettingParentsTableData(false);
-                setParentsTableData(response.data);
-            })
-            .catch((error) => {
-                setError(error);
-            });
-    }
 
     const { post, data, progress, processing, transform, errors } = inertiaUseForm();
 
@@ -91,15 +57,11 @@ export default function Create({
         try {
             transform(() => ({
                 ...values,
-                image: files ? files[0] : null,
-                banner: filesBanner ? filesBanner[0] : null,
             }));
             if (editData?.id) {
-                post('/admin/post_topics/' + editData?.id + '/update', {
+                post('/admin/post_subjects/' + editData.id + '/update', {
                     preserveScroll: true,
                     onSuccess: (page) => {
-                        setFiles(null);
-                        setFilesBanner(null);
                         if (page.props.flash?.success) {
                             toast.success('Success', {
                                 description: page.props.flash.success,
@@ -111,18 +73,12 @@ export default function Create({
                             description: 'Failed to update.' + JSON.stringify(e, null, 2),
                         });
                     },
-                    onFinish: () => {
-                        setIsGettingParentsTableData(true);
-                        getParentsTableData();
-                    },
                 });
             } else {
-                post('/admin/post_topics', {
+                post('/admin/post_subjects', {
                     preserveScroll: true,
                     onSuccess: (page) => {
                         form.reset();
-                        setFiles(null);
-                        setFilesBanner(null);
                         if (page.props.flash?.success) {
                             toast.success('Success', {
                                 description: page.props.flash.success,
@@ -133,10 +89,6 @@ export default function Create({
                         toast.error('Error', {
                             description: 'Failed to create.' + JSON.stringify(e, null, 2),
                         });
-                    },
-                    onFinish: () => {
-                        setIsGettingParentsTableData(true);
-                        getParentsTableData();
                     },
                 });
             }
@@ -153,23 +105,36 @@ export default function Create({
         <Form {...form}>
             <form className="space-y-8 pt-10">
                 <div className="grid grid-cols-12 gap-4">
-                    <div className="col-span-6">
+                    <div className="col-span-12">
                         <FormField
                             control={form.control}
-                            name="topic_name"
+                            name="title"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>{t('Topic')}</FormLabel>
+                                    <FormLabel>{t('Title')}</FormLabel>
                                     <FormControl>
-                                        <Input placeholder={t("Title")} type="text" {...field} />
+                                         <AutosizeTextarea placeholder={t("Title")} type="text" {...field} />
                                     </FormControl>
-                                    <FormMessage>{errors.location_name && <div>{errors.location_name}</div>}</FormMessage>
+                                    <FormMessage>{errors.title && <div>{errors.title}</div>}</FormMessage>
                                 </FormItem>
                             )}
                         />
                     </div>
-
-                    <div className="col-span-6">
+                </div>
+                <FormField
+                    control={form.control}
+                    name="short_description"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{t('Short Description')}</FormLabel>
+                            <FormControl>
+                                <AutosizeTextarea placeholder={t("Short Description")} className="resize-none" {...field} />
+                            </FormControl>
+                            <FormMessage>{errors.short_description && <div>{errors.short_description}</div>}</FormMessage>
+                        </FormItem>
+                    )}
+                />
+                <div className="col-span-6">
                         <FormField
                             control={form.control}
                             name="status"
@@ -192,8 +157,6 @@ export default function Create({
                             )}
                         />
                     </div>
-                </div>
-                
                 {progress && <ProgressWithValue value={progress.percentage} position="start" />}
                 {setIsOpen && <MyDialogCancelButton onClick={() => setIsOpen(false)} />}
 

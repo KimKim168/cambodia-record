@@ -28,8 +28,10 @@ import AddNewButtonNewStyleCreator from '../post_creators/components/add-new-but
 import AddNewButtonLocation from '../post_locations/components/add-new-button-location';
 import AddNewButtonNewStylePublisher from '../post_publishers/components/add-new-button-new-style-publisher';
 import AddNewButtonNewStyleLocation from '../post_publishing_countries/components/add-new-button-new-style-location';
+import AddNewButtonNewSubject from '../post_subjects/components/add-new-button-new-subject-';
 import AddNewButtonTopic from '../post_topics/components/add-new-button-topic';
 import AddNewButtonNewStyle from '../types/components/add-new-button-new-style';
+import AddNewButtonNewPeople from '../post_people/components/add-new-button-new-people';
 
 const formSchema = z.object({
     title: z.string().min(1).max(255),
@@ -41,6 +43,7 @@ const formSchema = z.object({
     subject: z.string().optional(),
     year: z.string().optional(),
     status: z.string().optional(),
+    file_status: z.string().optional(),
     parent_id: z.string().optional(),
     source: z.string().optional(),
     category_code: z.string().optional(),
@@ -49,6 +52,7 @@ const formSchema = z.object({
     location_id: z.string().optional(),
     topic_id: z.string().optional(),
     people_id: z.string().optional(),
+    subject_id: z.string().optional(),
     publishing_countries_code: z.string().optional(),
     post_date: z.coerce.date(),
 });
@@ -101,6 +105,8 @@ export default function Create() {
         postPeople,
         links,
         readOnly,
+        postSubjects,
+        people,
     } = usePage().props;
 
     const [files, setFiles] = useState<File[] | null>(null);
@@ -122,12 +128,14 @@ export default function Create() {
             year: editData?.year || '',
             source: editData?.source?.toString() || '',
             status: editData?.status || 'active',
+            file_status: editData?.file_status || 'public',
             category_code: editData?.category_code?.toString() || '',
             creator_id: editData?.creator_id?.toString() || '',
             publisher_id: editData?.publisher_id?.toString() || '',
             location_id: editData?.location_id?.toString() || '',
             topic_id: editData?.topic_id?.toString() || '',
             people_id: editData?.people_id?.toString() || '',
+            subject_id: editData?.subject_id?.toString() || '',
             publishing_countries_code: editData?.publishing_countries_code?.toString() || '',
             post_date: editData?.id ? new Date(editData?.post_date) : new Date(),
         },
@@ -276,22 +284,6 @@ export default function Create() {
                                 )}
                             />
                         </div>
-
-                        {/* <div className="col-span-6">
-                            <FormField
-                                control={form.control}
-                                name="title_kh"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('Title Khmer')}</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder={t('Title Khmer')} type="text" {...field} />
-                                        </FormControl>
-                                        <FormMessage>{errors.title_kh && <div>{errors.title_kh}</div>}</FormMessage>
-                                    </FormItem>
-                                )}
-                            />
-                        </div> */}
                     </div>
 
                     <FormField
@@ -308,37 +300,94 @@ export default function Create() {
                         )}
                     />
 
-                    {/* <FormField
-                        control={form.control}
-                        name="short_description_kh"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{t('Short Description Khmer')}</FormLabel>
-                                <FormControl>
-                                    <AutosizeTextarea placeholder={t('Short Description Khmer')} className="resize-none" {...field} />
-                                </FormControl>
-                                <FormMessage>{errors.short_description_kh && <div>{errors.short_description_kh}</div>}</FormMessage>
-                            </FormItem>
-                        )}
-                    /> */}
-
                     <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
                         <div className="col-span-6">
                             <FormField
                                 control={form.control}
-                                name="subject"
+                                name="link"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t('Subject')}</FormLabel>
+                                        <FormLabel>{t('Link')}</FormLabel>
                                         <FormControl>
-                                            <Input placeholder={t('Subject')} type="text" className="h-10" {...field} />
+                                            <Input placeholder="" type="text" {...field} />
                                         </FormControl>
-                                        <FormDescription>{t('Enter a short and clear subject.')}</FormDescription>
-                                        <FormMessage>{errors.subject && <div>{errors.subject}</div>}</FormMessage>
+                                        <FormMessage>{errors.link && <div>{errors.link}</div>}</FormMessage>
                                     </FormItem>
                                 )}
                             />
                         </div>
+                        <div className="col-span-6">
+                            <FormField
+                                control={form.control}
+                                name="subject_id"
+                                render={({ field }) => (
+                                    <FormItem key={field.value}>
+                                        <FormLabel>{t('Subject')}</FormLabel>
+                                        <div className="flex items-center gap-2">
+                                            <Popover className="flex-grow">
+                                                <PopoverTrigger asChild>
+                                                    <FormControl>
+                                                        <Button
+                                                            variant="outline"
+                                                            role="combobox"
+                                                            className={cn('flex-grow justify-between', !field.value && 'text-muted-foreground')}
+                                                        >
+                                                            {field.value
+                                                                ? (() => {
+                                                                      const subject = postSubjects?.find((c) => c.id == field.value);
+                                                                      return subject ? `${subject.title}` : 'hello';
+                                                                  })()
+                                                                : t('Select subject')}
+                                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                        </Button>
+                                                    </FormControl>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="p-0">
+                                                    <Command>
+                                                        <CommandInput placeholder="Search ..." />
+                                                        <CommandList>
+                                                            <CommandEmpty>{t('No data')}</CommandEmpty>
+                                                            <CommandGroup>
+                                                                <CommandItem value="" onSelect={() => form.setValue('subject_id', '')}>
+                                                                    <Check
+                                                                        className={cn(
+                                                                            'mr-2 h-4 w-4',
+                                                                            '' == field.value ? 'opacity-100' : 'opacity-0',
+                                                                        )}
+                                                                    />
+                                                                    {t('Select subject')}
+                                                                </CommandItem>
+                                                                {postSubjects?.map((subject) => (
+                                                                    <CommandItem
+                                                                        value={subject.title}
+                                                                        key={subject.id}
+                                                                        onSelect={() => form.setValue('subject_id', subject.id.toString())}
+                                                                    >
+                                                                        <Check
+                                                                            className={cn(
+                                                                                'mr-2 h-4 w-4',
+                                                                                subject.id.toString() === field.value ? 'opacity-100' : 'opacity-0',
+                                                                            )}
+                                                                        />
+                                                                        {subject.title}
+                                                                    </CommandItem>
+                                                                ))}
+                                                            </CommandGroup>
+                                                        </CommandList>
+                                                    </Command>
+                                                </PopoverContent>
+                                            </Popover>
+                                            {hasPermission('post create') && <AddNewButtonNewSubject />}
+                                        </div>
+                                        <FormDescription>{t('Select the subject where this post will show.')}</FormDescription>
+                                        <FormMessage>{errors.subject_id && <div>{errors.subject_id}</div>}</FormMessage>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        
+                    </div>
+                    <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
                         {types ? (
                             <div className="col-span-6">
                                 <FormField
@@ -364,86 +413,13 @@ export default function Create() {
                                                 </Select>
                                                 {hasPermission('type create') && <AddNewButtonNewStyle />}
                                             </div>
-                                            <FormDescription>{t('Choose type for external content and fill Link input.')}</FormDescription>
+                                            <FormDescription>{t('Select the type where this post will show.')}</FormDescription>
                                             <FormMessage>{errors.type && <div>{errors.type}</div>}</FormMessage>
                                         </FormItem>
                                     )}
                                 />
                             </div>
                         ) : null}
-                    </div>
-
-                    <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
-                        <div className="col-span-6">
-                            <FormField
-                                control={form.control}
-                                name="location_id"
-                                render={({ field }) => (
-                                    <FormItem key={field.value}>
-                                        <FormLabel>{t('Location')}</FormLabel>
-                                        <div className="flex items-center gap-2">
-                                            <Popover className="flex-grow">
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant="outline"
-                                                            role="combobox"
-                                                            className={cn('flex-grow justify-between', !field.value && 'text-muted-foreground')}
-                                                        >
-                                                            {field.value
-                                                                ? (() => {
-                                                                      const location = postLocations?.find((c) => c.id == field.value);
-                                                                      return location ? `${location.location_name}` : '';
-                                                                  })()
-                                                                : t('Select creator')}
-                                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="p-0">
-                                                    <Command>
-                                                        <CommandInput placeholder="Search location..." />
-                                                        <CommandList>
-                                                            <CommandEmpty>{t('No data')}</CommandEmpty>
-                                                            <CommandGroup>
-                                                                <CommandItem value="" onSelect={() => form.setValue('creator_id', '')}>
-                                                                    <Check
-                                                                        className={cn(
-                                                                            'mr-2 h-4 w-4',
-                                                                            '' == field.value ? 'opacity-100' : 'opacity-0',
-                                                                        )}
-                                                                    />
-                                                                    {t('Select location')}
-                                                                </CommandItem>
-                                                                {postLocations?.map((creator) => (
-                                                                    <CommandItem
-                                                                        value={creator.location_name}
-                                                                        key={creator.id}
-                                                                        onSelect={() => form.setValue('location_id', creator.id.toString())}
-                                                                    >
-                                                                        <Check
-                                                                            className={cn(
-                                                                                'mr-2 h-4 w-4',
-                                                                                creator.id.toString() === field.value ? 'opacity-100' : 'opacity-0',
-                                                                            )}
-                                                                        />
-                                                                        {creator.location_name}{' '}
-                                                                        {creator.location_name_kh && `(${creator.location_name_kh})`}
-                                                                    </CommandItem>
-                                                                ))}
-                                                            </CommandGroup>
-                                                        </CommandList>
-                                                    </Command>
-                                                </PopoverContent>
-                                            </Popover>
-                                            {hasPermission('post create') && <AddNewButtonLocation />}
-                                        </div>
-                                        <FormDescription>{t('Select the location where this post will show.')}</FormDescription>
-                                        <FormMessage>{errors.location_id && <div>{errors.location_id}</div>}</FormMessage>
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
                         <div className="col-span-6">
                             <FormField
                                 control={form.control}
@@ -514,7 +490,6 @@ export default function Create() {
                             />
                         </div>
                     </div>
-
                     {/* <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
                         <div className="col-span-6">
                             <FormField
@@ -585,9 +560,8 @@ export default function Create() {
                             />
                         </div>
                     </div> */}
-
                     <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
-                        {/* Category */}
+                        {/* Category or source */}
                         <div className="col-span-6">
                             <FormField
                                 control={form.control}
@@ -609,14 +583,14 @@ export default function Create() {
                                                                       const category = postCategories?.find((c) => c.code === field.value);
                                                                       return category ? `${category.name}` : '';
                                                                   })()
-                                                                : t('Select category')}
+                                                                : t('Select source')}
                                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                                         </Button>
                                                     </FormControl>
                                                 </PopoverTrigger>
                                                 <PopoverContent className="p-0">
                                                     <Command>
-                                                        <CommandInput placeholder="Search category..." />
+                                                        <CommandInput placeholder="Search source..." />
                                                         <CommandList>
                                                             <CommandEmpty>{t('No data')}</CommandEmpty>
                                                             <CommandGroup>
@@ -627,7 +601,7 @@ export default function Create() {
                                                                             '' == field.value ? 'opacity-100' : 'opacity-0',
                                                                         )}
                                                                     />
-                                                                    {t('Select category')}
+                                                                    {t('Select source')}
                                                                 </CommandItem>
                                                                 {postCategories?.map((category) => (
                                                                     <CommandItem
@@ -651,12 +625,85 @@ export default function Create() {
                                             </Popover>
                                             {hasPermission('post create') && <AddNewButtonNewStyleCategory />}
                                         </div>
-                                        <FormDescription>{t('Select the category where this post will show.')}</FormDescription>
+                                        <FormDescription>{t('Select the source where this post will show.')}</FormDescription>
                                         <FormMessage>{errors.category_code && <div>{errors.category_code}</div>}</FormMessage>
                                     </FormItem>
                                 )}
                             />
                         </div>
+                         {/* Location */}
+                          <div className="col-span-6">
+                            <FormField
+                                control={form.control}
+                                name="location_id"
+                                render={({ field }) => (
+                                    <FormItem key={field.value}>
+                                        <FormLabel>{t('Location')}</FormLabel>
+                                        <div className="flex items-center gap-2">
+                                            <Popover className="flex-grow">
+                                                <PopoverTrigger asChild>
+                                                    <FormControl>
+                                                        <Button
+                                                            variant="outline"
+                                                            role="combobox"
+                                                            className={cn('flex-grow justify-between', !field.value && 'text-muted-foreground')}
+                                                        >
+                                                            {field.value
+                                                                ? (() => {
+                                                                      const location = postLocations?.find((c) => c.id == field.value);
+                                                                      return location ? `${location.location_name}` : '';
+                                                                  })()
+                                                                : t('Select creator')}
+                                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                        </Button>
+                                                    </FormControl>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="p-0">
+                                                    <Command>
+                                                        <CommandInput placeholder="Search location..." />
+                                                        <CommandList>
+                                                            <CommandEmpty>{t('No data')}</CommandEmpty>
+                                                            <CommandGroup>
+                                                                <CommandItem value="" onSelect={() => form.setValue('creator_id', '')}>
+                                                                    <Check
+                                                                        className={cn(
+                                                                            'mr-2 h-4 w-4',
+                                                                            '' == field.value ? 'opacity-100' : 'opacity-0',
+                                                                        )}
+                                                                    />
+                                                                    {t('Select location')}
+                                                                </CommandItem>
+                                                                {postLocations?.map((creator) => (
+                                                                    <CommandItem
+                                                                        value={creator.location_name}
+                                                                        key={creator.id}
+                                                                        onSelect={() => form.setValue('location_id', creator.id.toString())}
+                                                                    >
+                                                                        <Check
+                                                                            className={cn(
+                                                                                'mr-2 h-4 w-4',
+                                                                                creator.id.toString() === field.value ? 'opacity-100' : 'opacity-0',
+                                                                            )}
+                                                                        />
+                                                                        {creator.location_name}
+                                                                    </CommandItem>
+                                                                ))}
+                                                            </CommandGroup>
+                                                        </CommandList>
+                                                    </Command>
+                                                </PopoverContent>
+                                            </Popover>
+                                            {hasPermission('post create') && <AddNewButtonLocation />}
+                                        </div>
+                                        <FormDescription>{t('Select the location where this post will show.')}</FormDescription>
+                                        <FormMessage>{errors.location_id && <div>{errors.location_id}</div>}</FormMessage>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
                         {/* Creator */}
                         <div className="col-span-6">
                             <FormField
@@ -727,9 +774,7 @@ export default function Create() {
                                 )}
                             />
                         </div>
-                    </div>
-
-                    <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
+                         {/* publisher */}
                         <div className="col-span-6">
                             <FormField
                                 control={form.control}
@@ -799,6 +844,9 @@ export default function Create() {
                                 )}
                             />
                         </div>
+                    </div>
+                    <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
+                         {/* publishing country */}
                         <div className="col-span-6">
                             <FormField
                                 control={form.control}
@@ -817,7 +865,7 @@ export default function Create() {
                                                         >
                                                             {field.value
                                                                 ? (() => {
-                                                                      const p_country = publishingCountry?.find((c) => c.code === field.value);
+                                                                      const p_country = publishingCountry?.find((c) => c.code == field.value);
                                                                       return p_country ? `${p_country.name}` : '';
                                                                   })()
                                                                 : t('Select Publishing Countrys')}
@@ -863,6 +911,76 @@ export default function Create() {
                                             {hasPermission('post create') && <AddNewButtonNewStyleLocation />}
                                         </div>
                                         <FormDescription>{t('Select the Publishing Countrys where this post will show.')}</FormDescription>
+                                        <FormMessage>{errors.publishing_countries_code && <div>{errors.publishing_countries_code}</div>}</FormMessage>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                         {/* people */}
+                        <div className="col-span-6">
+                            <FormField
+                                control={form.control}
+                                name="people_id"
+                                render={({ field }) => (
+                                    <FormItem key={field.value}>
+                                        <FormLabel>{t('People')}</FormLabel>
+                                        <div className="flex items-center gap-2">
+                                            <Popover className="flex-grow">
+                                               <PopoverTrigger asChild>
+                                                    <FormControl>
+                                                        <Button
+                                                            variant="outline"
+                                                            role="combobox"
+                                                            className={cn('flex-grow justify-between', !field.value && 'text-muted-foreground')}
+                                                        >
+                                                            {field.value
+                                                                ? (() => {
+                                                                      const person = people?.find((c) => c.id == field.value);
+                                                                      return person ? `${person.name}` : 'name';
+                                                                  })()
+                                                                : t('Select person')}
+                                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                        </Button>
+                                                    </FormControl>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="p-0">
+                                                    <Command>
+                                                        <CommandInput placeholder="Search..." />
+                                                        <CommandList>
+                                                            <CommandEmpty>{t('No data')}</CommandEmpty>
+                                                            <CommandGroup>
+                                                                <CommandItem value="" onSelect={() => form.setValue('people_id', '')}>
+                                                                    <Check
+                                                                        className={cn(
+                                                                            'mr-2 h-4 w-4',
+                                                                            '' == field.value ? 'opacity-100' : 'opacity-0',
+                                                                        )}
+                                                                    />
+                                                                    {t('Select person')}
+                                                                </CommandItem>
+                                                                {people?.map((person) => (
+                                                                    <CommandItem
+                                                                        value={person.type}
+                                                                        key={person.id}
+                                                                        onSelect={() => form.setValue('people_id', person.id.toString())}
+                                                                    >
+                                                                        <Check
+                                                                            className={cn(
+                                                                                'mr-2 h-4 w-4',
+                                                                                person.id.toString() == field.value ? 'opacity-100' : 'opacity-0',
+                                                                            )}
+                                                                        />
+                                                                        {person.name}
+                                                                    </CommandItem>
+                                                                ))}
+                                                            </CommandGroup>
+                                                        </CommandList>
+                                                    </Command>
+                                                </PopoverContent>
+                                            </Popover>
+                                            {hasPermission('post create') && <AddNewButtonNewPeople />}
+                                        </div>
+                                        <FormDescription>{t('Select the person where this post will show.')}</FormDescription>
                                         <FormMessage>{errors.publishing_countries_code && <div>{errors.publishing_countries_code}</div>}</FormMessage>
                                     </FormItem>
                                 )}

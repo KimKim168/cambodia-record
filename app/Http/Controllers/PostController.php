@@ -20,8 +20,8 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
-// Import your correct model name
 use App\Models\PostUploadFile;
+use App\Models\Subject;
 use App\Models\Topic;
 
 class PostController extends Controller implements HasMiddleware
@@ -46,7 +46,7 @@ class PostController extends Controller implements HasMiddleware
         $query = Post::query();
 
         // Eager load your correct relationship name 'upload_file'
-        $query->with('created_by', 'updated_by', 'images', 'category', 'creator', 'publisher', 'location', 'people', 'topic','source_detail', 'publishing_country', 'upload_file');
+        $query->with('created_by', 'updated_by', 'images', 'category', 'creator', 'subject', 'publisher', 'location', 'people', 'topic', 'source_detail', 'publishing_country', 'upload_file');
 
         if ($status) {
             $query->where('status', $status);
@@ -61,7 +61,9 @@ class PostController extends Controller implements HasMiddleware
         }
 
         $tableData = $query->paginate(perPage: 10)->onEachSide(1);
-        // return $tableData;
+
+        $People = People::where(['status' => 'active'])->orderBy('id', 'desc')->get();
+        // return $People;
         return Inertia::render('admin/posts/Index', [
             'tableData' => $tableData,
         ]);
@@ -76,15 +78,18 @@ class PostController extends Controller implements HasMiddleware
             'postLocations' => Location::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postTopics' => Topic::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPeople' => People::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postSubjects' => Subject::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPublishers' => Publisher::where('status', 'active')->orderBy('id', 'desc')->get(),
             'publishingCountry' => PublishingCountry::where('status', 'active')->orderBy('id', 'desc')->get(),
             'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
             'typePeople' => Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id', 'desc')->get(),
+            'people' => People::where(['status' => 'active'])->orderBy('id', 'desc')->get(),
         ]);
     }
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'post_date' => 'required|date',
@@ -99,10 +104,12 @@ class PostController extends Controller implements HasMiddleware
             'publishing_countries_code' => 'nullable|string',
             'creator_id' => 'nullable|numeric',
             'publisher_id' => 'nullable|numeric',
+            'subject_id' => 'nullable|numeric',
             'type' => 'nullable|string',
-            'subject' => 'nullable|string',
+            'people_id' => 'nullable|numeric',
             'year' => 'nullable|string',
             'status' => 'nullable|string|in:active,inactive',
+            'file_status' => 'nullable|string|in:public,private',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp,svg,webp|max:2048',
             'files' => 'nullable|array',
@@ -165,9 +172,11 @@ class PostController extends Controller implements HasMiddleware
             'postLocations' => Location::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postTopics' => Topic::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPeople' => People::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postSubjects' => Subject::where('status', 'active')->orderBy('id', 'desc')->get(),
             'publishingCountry' => PublishingCountry::where('status', 'active')->orderBy('id', 'desc')->get(),
             'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
             'typePeople' => Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id', 'desc')->get(),
+            'people' => People::where(['status' => 'active'])->orderBy('id', 'desc')->get(),
             'readOnly' => true,
         ]);
     }
@@ -183,9 +192,11 @@ class PostController extends Controller implements HasMiddleware
             'postLocations' => Location::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postTopics' => Topic::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPeople' => People::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postSubjects' => Subject::where('status', 'active')->orderBy('id', 'desc')->get(),
             'publishingCountry' => PublishingCountry::where('status', 'active')->orderBy('id', 'desc')->get(),
             'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
             'typePeople' => Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id', 'desc')->get(),
+            // 'people' => People::where(['status' => 'active'])->orderBy('id', 'desc')->get(),
         ]);
     }
 
@@ -208,10 +219,12 @@ class PostController extends Controller implements HasMiddleware
             'publishing_countries_code' => 'nullable|string',
             'creator_id' => 'nullable|numeric',
             'publisher_id' => 'nullable|numeric',
+            'subject_id' => 'nullable|numeric',
+            'people_id' => 'nullable|numeric',
             'type' => 'nullable|string',
-            'subject' => 'nullable|string',
             'year' => 'nullable|string',
             'status' => 'nullable|string|in:active,inactive',
+            'file_status' => 'nullable|string|in:public,private',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp,svg,webp|max:2048',
             'files' => 'nullable|array',
@@ -266,7 +279,7 @@ class PostController extends Controller implements HasMiddleware
                     }
                 }
             });
-        }  catch (\Exception $e) {
+        } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to create post: ' . $e->getMessage())->withInput();
         }
         // return $postData;
@@ -366,6 +379,21 @@ class PostController extends Controller implements HasMiddleware
 
         return redirect()->back()->with('success', 'Status updated successfully!');
     }
+
+    public function update_file_status(Request $request, Post $post)
+    {
+        // dd($request->all());
+        $request->validate([
+            'file_status' => 'required|string|in:public,private',
+        ]);
+
+        $post->update([
+            'file_status' => $request->file_status,
+        ]);
+
+        return redirect()->back()->with('success', 'File status updated successfully!');
+    }
+
 
     public function destroy(Post $post)
     {

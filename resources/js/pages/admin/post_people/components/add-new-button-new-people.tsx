@@ -4,15 +4,16 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import Create from '../Create';
+import MyAddNewButton from '@/components/my-add-new-button';
 import useTranslation from '@/hooks/use-translation';
-import MyAddNewButtonPeople from '@/components/my-add-new-button-people';
-const AddNewButtonPeople = () => {
+import MyAddNewButtonNewPeople from '@/components/my-add-new-button-new-people';
+const AddNewButtonNewPeople = () => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     return (
         <Dialog modal={false} open={isOpen}>
             <DialogTrigger asChild>
-               <MyAddNewButtonPeople
+               <MyAddNewButtonNewPeople
                 onClick={() => setIsOpen(true)}/>
             </DialogTrigger>
             {isOpen && <div className="fixed inset-0 z-40 bg-black/80" />}
@@ -30,4 +31,4 @@ const AddNewButtonPeople = () => {
     );
 };
 
-export default AddNewButtonPeople;
+export default AddNewButtonNewPeople;

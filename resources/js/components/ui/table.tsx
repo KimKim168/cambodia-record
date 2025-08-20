@@ -86,7 +86,7 @@ function TableCell({ className, children, ...props }: React.ComponentProps<"td">
       )}
       {...props}
     >
-      <span className="line-clamp-5">{children}</span>
+      <span className="line-clamp-4">{children}</span>
     </td>
   )
 }

@@ -1,9 +1,10 @@
 import MyDialogCloseButton from '@/components/my-dialog-close-button';
+import { MyTooltipButton } from '@/components/my-tooltip-button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { EditIcon } from 'lucide-react';
 import { useState } from 'react';
 import Create from '../Create';
-import { MyTooltipButton } from '@/components/my-tooltip-button';
+
 import useTranslation from '@/hooks/use-translation';
 const EditButton = ({ item }: { item: any }) => {
     const {t} = useTranslation();
@@ -11,7 +12,7 @@ const EditButton = ({ item }: { item: any }) => {
     return (
         <Dialog modal={false} open={isOpen}>
             <DialogTrigger asChild>
-                <MyTooltipButton variant="ghost" title={t('Edit')} side="bottom" className="text-foreground" size="icon" onClick={() => setIsOpen(true)}>
+                <MyTooltipButton variant="ghost" title={t('Edit')} side='bottom' className="text-foreground" size="icon" onClick={() => setIsOpen(true)}>
                     <EditIcon />
                 </MyTooltipButton>
             </DialogTrigger>

@@ -57,7 +57,7 @@ export default function Create({
     const [parentsTableData, setParentsTableData] = useState([]);
     const [isGettingParentsTableData, setIsGettingParentsTableData] = useState(false);
     const [error, setError] = useState(null);
-    const { types } = usePage().props;
+    const { typePeople } = usePage().props;
     useEffect(() => {
         setIsGettingParentsTableData(true);
         getParentsTableData();
@@ -190,8 +190,10 @@ export default function Create({
                     </div>
                 </div>
                 <div>
+                    {typePeople ? (
                     <div className="col-span-12">
-                        <FormField
+                        
+                            <FormField
                             control={form.control}
                             name="type"
                             render={({ field }) => (
@@ -205,7 +207,7 @@ export default function Create({
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {types?.map((typeObject) => (
+                                                {typePeople?.map((typeObject) => (
                                                     <SelectItem key={typeObject.id + typeObject.type} value={typeObject.type}>
                                                         {typeObject.label}
                                                     </SelectItem>
@@ -218,7 +220,11 @@ export default function Create({
                                 </FormItem>
                             )}
                         />
+                     
+
+                        
                     </div>
+                       ):null} 
                 </div>
 
                 {progress && <ProgressWithValue value={progress.percentage} position="start" />}

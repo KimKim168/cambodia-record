@@ -8,6 +8,7 @@ import { Link } from '@inertiajs/react';
 import {
     AppWindowIcon,
     BookmarkCheckIcon,
+    BookOpenText,
     Earth,
     FilePenLineIcon,
     GalleryThumbnailsIcon,
@@ -163,12 +164,17 @@ export function AppSidebar() {
             icon: AppWindowIcon,
             url: '/admin/pages',
         },
-
         {
             title: t('Posts'),
             permission: 'post view',
             icon: FilePenLineIcon,
             url: '/admin/posts',
+        },
+        {
+            title: t('Subjects'),
+            permission: 'post view',
+            icon: BookOpenText,
+            url: '/admin/post_subjects',
         },
         {
             title: t('Creators'),

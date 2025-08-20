@@ -1,25 +1,19 @@
 import DeleteButton from '@/components/delete-button';
-import MyImageGallery from '@/components/my-image-gallery';
 import MyNoData from '@/components/my-no-data';
 import MyUpdateStatusButton from '@/components/my-update-status-button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import usePermission from '@/hooks/use-permission';
+import useTranslation from '@/hooks/use-translation';
 import { router, usePage } from '@inertiajs/react';
 import { ArrowUpDown } from 'lucide-react';
-import { useState } from 'react';
 import EditButton from './edit-button';
 import ViewButton from './view-button';
-import useTranslation from '@/hooks/use-translation';
 
 const MyTableData = () => {
-    const hasPermission = usePermission();
-    const {t} = useTranslation();
-
     const { tableData } = usePage().props;
     const queryParams = new URLSearchParams(window.location.search);
     const currentPath = window.location.pathname; // Get dynamic path
-
+    const { t } = useTranslation();
     const handleSort = (fieldName: string) => {
         if (fieldName === queryParams.get('sortBy')) {
             if (queryParams.get('sortDirection') === 'asc') {
@@ -34,9 +28,6 @@ const MyTableData = () => {
         router.get(currentPath + '?' + queryParams?.toString());
     };
 
-    const [selectedImages, setSelectedImages] = useState([]);
-    const [isOpenViewImages, setIsOpenViewImages] = useState(false);
-
     return (
         <>
             <ScrollArea className="w-full rounded-md border">
@@ -45,14 +36,9 @@ const MyTableData = () => {
                         <TableRow>
                             <TableHead className="w-[50px]">{t('No')}</TableHead>
                             <TableHead className="text-left">{t('Action')}</TableHead>
-                            {/* <TableHead onClick={() => handleSort('code')}>
+                            <TableHead onClick={() => handleSort('title')}>
                                 <span className="flex cursor-pointer items-center">
-                                    <ArrowUpDown size={16} /> {t('Code')}
-                                </span>
-                            </TableHead> */}
-                            <TableHead onClick={() => handleSort('topic_name')}>
-                                <span className="flex cursor-pointer items-center">
-                                    <ArrowUpDown size={16} /> {t('Topic')}
+                                    <ArrowUpDown size={16} /> {t('Title')}
                                 </span>
                             </TableHead>
                             <TableHead onClick={() => handleSort('status')}>
@@ -91,23 +77,19 @@ const MyTableData = () => {
                                 <TableCell>
                                     <span className="flex h-full items-center justify-start">
                                         <ViewButton item={item} />
-                                        {hasPermission('post delete') && <DeleteButton deletePath="/admin/post_topics/" id={item.id} />}
-                                        {hasPermission('post update') && <EditButton item={item} />}
+                                        <DeleteButton deletePath="/admin/post_subjects/" id={item.id} />
+                                        <EditButton item={item} />
                                     </span>
                                 </TableCell>
-                                {/* <TableCell>{item.code || '---'}</TableCell> */}
-                                <TableCell>{item.topic_name || '---'}</TableCell>
+                                <TableCell>{item.title || '---'}</TableCell>
+                                {/* <TableCell>{item.order_index || '---'}</TableCell> */}
                                 <TableCell>
-                                    {hasPermission('post update') ? (
-                                        <MyUpdateStatusButton
-                                            id={item.id}
-                                            pathName="/admin/post_topics"
-                                            currentStatus={item.status}
-                                            statuses={['active', 'inactive']}
-                                        />
-                                    ) : (
-                                        <span className='capitalize'>{item.status}</span>
-                                    )}
+                                    <MyUpdateStatusButton
+                                        id={item.id}
+                                        pathName="/admin/post_subjects"
+                                        currentStatus={item.status}
+                                        statuses={['active', 'inactive']}
+                                    />
                                 </TableCell>
                                 <TableCell>
                                     {item.created_at
@@ -133,6 +115,7 @@ const MyTableData = () => {
                         ))}
                     </TableBody>
                 </Table>
+
                 <ScrollBar orientation="horizontal" />
             </ScrollArea>
             {tableData?.data?.length < 1 && <MyNoData />}

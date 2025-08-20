@@ -40,6 +40,7 @@ use App\Http\Controllers\PublisherController;
 use App\Http\Controllers\PublishingCountryController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\SUbjectController;
 use App\Http\Controllers\TeamCategoryController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TopicController;
@@ -87,6 +88,9 @@ Route::middleware('auth')->group(function () {
     Route::post('admin/posts/{post}/update_status', [PostController::class, 'update_status']);
     Route::delete('admin/posts/images/{image}', [PostController::class, 'destroy_image']);
     Route::delete('admin/posts/upload_file/{file}', [PostController::class, 'destroy_upload_file']);
+    Route::post('admin/posts/upload_file/{post}/update_file_status', [PostController::class, 'update_file_status']);
+
+
     Route::get('admin/post_view_counts', [PostViewController::class, 'index']);
     Route::get('admin/post_view_counts/export', [PostViewController::class, 'export']);
 
@@ -227,6 +231,12 @@ Route::middleware('auth')->group(function () {
     Route::post('admin/post_people/{post_people}/update', [PeopleController::class, 'update']);
     Route::get('admin/all_page_people', action: [PeopleController::class, 'all_page_people']);
     Route::post('admin/post_people/{post_people}/update_status', [PeopleController::class, 'update_status']);
+
+    // Post subject Route
+    Route::resource('admin/post_subjects', SubjectController::class);
+    Route::post('admin/post_subjects/{post_subject}/update', [SubjectController::class, 'update']);
+    Route::get('admin/all_post_subject', action: [SubjectController::class, 'all_post_subject']);
+    Route::post('admin/post_subjects/{post_subject}/update_status', [SubjectController::class, 'update_status']);
 
     // Post Creator Route
     Route::resource('admin/post_publishing_countries', PublishingCountryController::class);

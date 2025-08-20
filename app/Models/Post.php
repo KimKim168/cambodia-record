@@ -31,6 +31,11 @@ class Post extends Model
         return $this->belongsTo(Topic::class, 'topic_id', 'id');
     }
 
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class, 'subject_id', 'id');
+    }
+
      public function people()
     {
         return $this->belongsTo(People::class, 'people_id', 'id');
