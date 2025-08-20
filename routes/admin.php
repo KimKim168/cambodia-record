@@ -40,7 +40,7 @@ use App\Http\Controllers\PublisherController;
 use App\Http\Controllers\PublishingCountryController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShopController;
-use App\Http\Controllers\SUbjectController;
+use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeamCategoryController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TopicController;
