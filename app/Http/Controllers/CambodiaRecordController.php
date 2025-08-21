@@ -104,6 +104,9 @@ class CambodiaRecordController extends Controller
                     })
                     ->orWhereHas('topic', function ($q) use ($search) {
                         $q->where('topic_name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('people', function ($q) use ($search) {
+                        $q->where('name', 'LIKE', "%{$search}%");
                     });
             });
         }
@@ -123,7 +126,7 @@ class CambodiaRecordController extends Controller
         // 5. Paginate the final results.
         $tableData = $query->paginate($perPage)->onEachSide(1);
 
-        // 6. Return the view with both the results and the filter data.
+        // return $tableData;
         return Inertia::render('combodiaRecord/home/Post', [
             'tableData' => $tableData,
             'types' => $types,

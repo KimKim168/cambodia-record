@@ -2,52 +2,16 @@ import styled from 'styled-components';
 import Search from '../components/search';
 import CamboLayout from '../layout/CamboLayout';
 import { usePage } from '@inertiajs/react';
+import TextHeader from '../components/text-header';
 
 const Post = () => {
-    // const tableData = [
-    //     {
-    //         id: 1,
-    //         title: 'Solider station at the frontline on 27 July 2025 ',
-    //         imageUrl: '/assets/demo-images/conflict.webp',
-    //         buttonLabel: 'Details',
-    //     },
-    //     {
-    //         id: 2,
-    //         title: 'Conflict Zone Medic',
-    //         imageUrl: '/assets/demo-images/conflict.webp',
-    //         buttonLabel: 'Details',
-    //     },
-    //     {
-    //         id: 3,
-    //         title: 'Military Communications Officer',
-    //         imageUrl: '/assets/demo-images/conflict.webp',
-    //         buttonLabel: 'Details',
-    //     },
-    //     {
-    //         id: 4,
-    //         title: 'Reconnaissance Drone Operator',
-    //         imageUrl: '/assets/demo-images/conflict.webp',
-    //         buttonLabel: 'Details',
-    //     },
-    //     {
-    //         id: 5,
-    //         title: 'Field Intelligence Analyst',
-    //         imageUrl: '/assets/demo-images/conflict.webp',
-    //         buttonLabel: 'Details',
-    //     },
-    //     {
-    //         id: 6,
-    //         title: 'Combat Logistics Coordinator',
-    //         imageUrl: '/assets/demo-images/conflict.webp',
-    //         buttonLabel: 'Details',
-    //     },
-    // ];
     
     const { tableData } = usePage().props;
 
     return (
         <CamboLayout>
-            <div className="mt-6">
+            <div className="mx-auto max-w-screen-xl py-8 text-center">
+                <TextHeader/>
                 <Search />
             </div>
             <StyledWrapper className="font-kantumruy mx-auto grid max-w-screen-xl grid-cols-1 gap-4 px-4 sm:grid-cols-2 md:grid-cols-3 xl:px-0">
