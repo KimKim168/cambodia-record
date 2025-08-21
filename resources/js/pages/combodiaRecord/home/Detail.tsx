@@ -1,6 +1,6 @@
 // components/NewsDetail.tsx
 import { usePage } from '@inertiajs/react';
-import { Paperclip } from 'lucide-react';
+import { BadgeCheck, BadgeXIcon, Paperclip } from 'lucide-react';
 import PostRelated from '../components/post-related';
 import CamboLayout from '../layout/CamboLayout';
 
@@ -29,22 +29,41 @@ const Detail = () => {
 
                             <ul className="space-y-1 text-sm text-gray-700">
                                 <li>
-                                    <span className="text-base leading-relaxed">Creator :</span> {post?.creator?.name}
+                                    <span className="text-base leading-relaxed">Topic :</span> {post?.topic?.topic_name || 'N/A'}
                                 </li>
                                 <li>
-                                    <span className="text-base leading-relaxed">Types of media :</span> {post?.type}
+                                    <span className="text-base leading-relaxed">Creator :</span> {post?.creator?.name || 'N/A'}
                                 </li>
                                 <li>
-                                    <span className="text-base leading-relaxed">Subject :</span> {post?.subject}
+                                    <span className="text-base leading-relaxed">People :</span> {post?.people?.name || 'N/A'} ({post?.people?.type})
                                 </li>
                                 <li>
-                                    <span className="text-base leading-relaxed">Publisher :</span> {post?.publisher?.name || 'Unknown'}
+                                    <span className="text-base leading-relaxed">Types of media :</span> {post?.type || 'N/A'}
                                 </li>
                                 <li>
-                                    <span className="text-base leading-relaxed">Date of publishing :</span> {formatDate(post?.post_date)}
+                                    <span className="text-base leading-relaxed">Publisher :</span> {post?.publisher?.name || 'N/A'}
+                                </li>
+                                <li>
+                                    <span className="text-base leading-relaxed">Location :</span> {post?.location?.location_name || 'N/A'}
                                 </li>
                                 <li>
                                     <span className="text-base leading-relaxed">Publishing country :</span> {post?.publishing_country?.name || 'N/A'}
+                                </li>
+                                <li>
+                                    <span className="text-base leading-relaxed">Publishing Date :</span> {formatDate(post?.publishing_date)}
+                                </li>
+                                <li>
+                                    {post?.verify_status == 'verify' ? (
+                                        <span className="inline-flex items-center gap-1 text-base font-bold text-blue-600">
+                                            <BadgeCheck className="h-5 w-5" />
+                                            Verified
+                                        </span>
+                                    ) : (
+                                        <span className="inline-flex items-center gap-1 text-base font-bold text-yellow-600">
+                                            <BadgeXIcon className="h-5 w-5" />
+                                            Unverified
+                                        </span>
+                                    )}
                                 </li>
                                 <li>
                                     {/* <div className="flex flex-col gap-3">
@@ -101,9 +120,6 @@ const Detail = () => {
                                         )}
                                     </div>
                                 </li>
-                                {/* <li className="font-kantumruy text-base leading-relaxed text-gray-800">
-                                    <span dangerouslySetInnerHTML={{ __html: post?.long_description }} />
-                                </li> */}
                             </ul>
                         </div>
                         {/* Right content - image */}

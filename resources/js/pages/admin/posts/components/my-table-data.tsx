@@ -4,12 +4,13 @@ import MyNoData from '@/components/my-no-data';
 import { MyTooltipButton } from '@/components/my-tooltip-button';
 import MyUpdateFileStatusButton from '@/components/my-update-file-status-button';
 import MyUpdateStatusButton from '@/components/my-update-status-button';
+import MyUpdateVerifyButton from '@/components/my-update-verify-button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import usePermission from '@/hooks/use-permission';
 import useTranslation from '@/hooks/use-translation';
 import { Link, router, usePage } from '@inertiajs/react';
-import { ArrowUpDown, EditIcon, ScanEyeIcon } from 'lucide-react';
+import { ArrowUpDown, EditIcon, LucideVerified, ScanEyeIcon } from 'lucide-react';
 import { useState } from 'react';
 
 const MyTableData = () => {
@@ -18,7 +19,7 @@ const MyTableData = () => {
     const hasPermission = usePermission();
 
     const { tableData } = usePage().props;
-    console.log(tableData?.data);
+    // console.log(tableData?.data);
     const queryParams = new URLSearchParams(window.location.search);
     const currentPath = window.location.pathname; // Get dynamic path
 
@@ -76,9 +77,9 @@ const MyTableData = () => {
                                     <ArrowUpDown size={16} /> {t('File Status')}
                                 </span>
                             </TableHead>
-                            <TableHead onClick={() => handleSort('subject_id')}>
+                            <TableHead onClick={() => handleSort('verify_status')}>
                                 <span className="flex cursor-pointer items-center">
-                                    <ArrowUpDown size={16} /> {t('Subject')}
+                                    <ArrowUpDown size={16} /> {t('Verify Status')}
                                 </span>
                             </TableHead>
                             <TableHead onClick={() => handleSort('category_code')}>
@@ -111,6 +112,11 @@ const MyTableData = () => {
                                     <ArrowUpDown size={16} /> {t('Total View')}
                                 </span>
                             </TableHead> */}
+                            <TableHead onClick={() => handleSort('publishing_date')}>
+                                <span className="flex cursor-pointer items-center">
+                                    <ArrowUpDown size={16} /> {t('Publishing Date')}
+                                </span>
+                            </TableHead>
                             <TableHead onClick={() => handleSort('post_date')}>
                                 <span className="flex cursor-pointer items-center">
                                     <ArrowUpDown size={16} /> {t('Post Date')}
@@ -188,54 +194,6 @@ const MyTableData = () => {
                                         />
                                     )}
                                 </TableCell>
-                                {/* <TableCell>
-                                    {item.upload_file && item.upload_file.length > 0 ? (
-                                        <div className="flex flex-col items-start gap-2">
-                                            {item.upload_file.map((file) => {
-                                                // Get the part of the string after the first underscore
-                                                const displayName = file.file_name.substring(file.file_name.indexOf('_') + 1);
-
-                                                return (
-                                                    <a
-                                                        key={file.id}
-                                                        href={`/assets/files/videos/${file.file_name}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center gap-2 text-sm text-blue-600 underline"
-                                                        title={displayName}
-                                                    >
-                                                        <Paperclip className="size-4 flex-shrink-0" />
-                                                       
-                                                        <span className="truncate max-w-md">{displayName}</span>
-                                                    </a>
-                                                );
-                                            })}
-                                        </div>
-                                    ) : (
-                                        '---'
-                                    )}
-                                </TableCell> */}
-                                {/* <TableCell className="text-center">
-                                    {item.link ? (
-                                        <a href={`${item.link}`} target="_blank">
-                                            <MyTooltipButton variant="ghost" title={item.link} className="p-0 hover:bg-transparent">
-                                                {item.source_detail ? (
-                                                    <span>
-                                                        <img
-                                                            src={`/assets/images/links/thumb/${item?.source_detail?.image}`}
-                                                            className="aspect-square h-10 object-contain"
-                                                            alt=""
-                                                        />
-                                                    </span>
-                                                ) : (
-                                                    <SquareArrowOutUpRightIcon className="hover:stroke-3" />
-                                                )}
-                                            </MyTooltipButton>
-                                        </a>
-                                    ) : (
-                                        '---'
-                                    )}
-                                </TableCell> */}
                                 <TableCell>{item.title || '---'}</TableCell>
                                 <TableCell>{item.short_description || '---'}</TableCell>
                                 <TableCell>
@@ -261,9 +219,19 @@ const MyTableData = () => {
                                     ) : (
                                         <span className="capitalize">{item.file_status}</span>
                                     )}
-                                
                                 </TableCell>
-                                <TableCell>{item.subject?.title || '---'}</TableCell>
+                                <TableCell>
+                                    {hasPermission('post update') ? (
+                                        <MyUpdateVerifyButton
+                                            id={item.id}
+                                            pathName="/admin/posts"
+                                            currentStatus={item.verify_status}
+                                            statuses={['verify', 'unverify']}
+                                        />
+                                    ) : (
+                                        <span className="capitalize">{item.verify_status}</span>
+                                    )}
+                                </TableCell>
                                 <TableCell>{item.category_code || '---'}</TableCell>
                                 <TableCell>{item.creator?.name || '---'}</TableCell>
                                 <TableCell>{item.publisher?.name || '---'}</TableCell>
@@ -272,6 +240,15 @@ const MyTableData = () => {
                                 {/* <TableCell>
                                     {item.total_view_counts ? <span className="flex items-center gap-1">{item.total_view_counts}</span> : '---'}
                                 </TableCell> */}
+                                <TableCell className="whitespace-nowrap">
+                                    {item.publishing_date
+                                        ? new Date(item.publishing_date).toLocaleDateString('en-UK', {
+                                              year: 'numeric',
+                                              month: 'long',
+                                              day: 'numeric',
+                                          })
+                                        : '---'}
+                                </TableCell>
                                 <TableCell className="whitespace-nowrap">
                                     {item.post_date
                                         ? new Date(item.post_date).toLocaleDateString('en-UK', {

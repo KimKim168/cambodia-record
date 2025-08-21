@@ -18,7 +18,7 @@ import { BreadcrumbItem } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm as inertiaUseForm, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
-import { CalendarIcon, Check, ChevronsUpDown, CloudUpload, Loader, Paperclip } from 'lucide-react';
+import { BadgeCheck, BadgeX, CalendarIcon, Check, ChevronsUpDown, CloudUpload, Loader, LockIcon, Paperclip, UnlockIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -26,12 +26,12 @@ import * as z from 'zod';
 import AddNewButtonNewStyleCategory from '../post_categories/components/add-new-button-new-style-category';
 import AddNewButtonNewStyleCreator from '../post_creators/components/add-new-button-new-style-creator';
 import AddNewButtonLocation from '../post_locations/components/add-new-button-location';
+import AddNewButtonNewPeople from '../post_people/components/add-new-button-new-people';
 import AddNewButtonNewStylePublisher from '../post_publishers/components/add-new-button-new-style-publisher';
 import AddNewButtonNewStyleLocation from '../post_publishing_countries/components/add-new-button-new-style-location';
 import AddNewButtonNewSubject from '../post_subjects/components/add-new-button-new-subject-';
 import AddNewButtonTopic from '../post_topics/components/add-new-button-topic';
 import AddNewButtonNewStyle from '../types/components/add-new-button-new-style';
-import AddNewButtonNewPeople from '../post_people/components/add-new-button-new-people';
 
 const formSchema = z.object({
     title: z.string().min(1).max(255),
@@ -43,6 +43,7 @@ const formSchema = z.object({
     subject: z.string().optional(),
     year: z.string().optional(),
     status: z.string().optional(),
+    verify_status: z.string().optional(),
     file_status: z.string().optional(),
     parent_id: z.string().optional(),
     source: z.string().optional(),
@@ -55,6 +56,7 @@ const formSchema = z.object({
     subject_id: z.string().optional(),
     publishing_countries_code: z.string().optional(),
     post_date: z.coerce.date(),
+    publishing_date: z.coerce.date(),
 });
 
 export default function Create() {
@@ -128,7 +130,8 @@ export default function Create() {
             year: editData?.year || '',
             source: editData?.source?.toString() || '',
             status: editData?.status || 'active',
-            file_status: editData?.file_status || 'public',
+            verify_status: editData?.verify_status || 'unverify',
+            file_status: editData?.file_status || 'private',
             category_code: editData?.category_code?.toString() || '',
             creator_id: editData?.creator_id?.toString() || '',
             publisher_id: editData?.publisher_id?.toString() || '',
@@ -138,6 +141,7 @@ export default function Create() {
             subject_id: editData?.subject_id?.toString() || '',
             publishing_countries_code: editData?.publishing_countries_code?.toString() || '',
             post_date: editData?.id ? new Date(editData?.post_date) : new Date(),
+            publishing_date: editData?.id ? new Date(editData?.publishing_date) : new Date(),
         },
     });
 
@@ -239,10 +243,7 @@ export default function Create() {
                                                 <FormControl>
                                                     <Button
                                                         variant={'outline'}
-                                                        className={cn(
-                                                            'w-[280px] pl-3 text-left font-normal',
-                                                            !field.value && 'text-muted-foreground',
-                                                        )}
+                                                        className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
                                                     >
                                                         {field.value ? format(field.value, 'PPP') : <span>{t('Pick a date')}</span>}
                                                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -262,6 +263,42 @@ export default function Create() {
                                             </PopoverContent>
                                         </Popover>
                                         <FormMessage>{errors.post_date && <div>{errors.post_date}</div>}</FormMessage>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className="col-span-6">
+                            <FormField
+                                control={form.control}
+                                name="publishing_date"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel>{t('Publishing Date')}</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={'outline'}
+                                                        className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
+                                                    >
+                                                        {field.value ? format(field.value, 'PPP') : <span>{t('Pick a date')}</span>}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    fromYear={1960}
+                                                    toYear={2030}
+                                                    captionLayout="dropdown-buttons"
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormMessage>{errors.publishing_date && <div>{errors.publishing_date}</div>}</FormMessage>
                                     </FormItem>
                                 )}
                             />
@@ -301,7 +338,7 @@ export default function Create() {
                     />
 
                     <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
-                        <div className="col-span-6">
+                        <div className="col-span-12">
                             <FormField
                                 control={form.control}
                                 name="link"
@@ -316,7 +353,7 @@ export default function Create() {
                                 )}
                             />
                         </div>
-                        <div className="col-span-6">
+                        <div className="col-span-6 hidden">
                             <FormField
                                 control={form.control}
                                 name="subject_id"
@@ -385,7 +422,6 @@ export default function Create() {
                                 )}
                             />
                         </div>
-                        
                     </div>
                     <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
                         {types ? (
@@ -470,7 +506,7 @@ export default function Create() {
                                                                         <Check
                                                                             className={cn(
                                                                                 'mr-2 h-4 w-4',
-                                                                                item.id.toString() === field.value ? 'opacity-100' : 'opacity-0',
+                                                                                item.id.toString() == field.value ? 'opacity-100' : 'opacity-0',
                                                                             )}
                                                                         />
                                                                         {item.topic_name}
@@ -631,8 +667,8 @@ export default function Create() {
                                 )}
                             />
                         </div>
-                         {/* Location */}
-                          <div className="col-span-6">
+                        {/* Location */}
+                        <div className="col-span-6">
                             <FormField
                                 control={form.control}
                                 name="location_id"
@@ -682,7 +718,7 @@ export default function Create() {
                                                                         <Check
                                                                             className={cn(
                                                                                 'mr-2 h-4 w-4',
-                                                                                creator.id.toString() === field.value ? 'opacity-100' : 'opacity-0',
+                                                                                creator.id.toString() == field.value ? 'opacity-100' : 'opacity-0',
                                                                             )}
                                                                         />
                                                                         {creator.location_name}
@@ -774,7 +810,7 @@ export default function Create() {
                                 )}
                             />
                         </div>
-                         {/* publisher */}
+                        {/* publisher */}
                         <div className="col-span-6">
                             <FormField
                                 control={form.control}
@@ -846,7 +882,7 @@ export default function Create() {
                         </div>
                     </div>
                     <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
-                         {/* publishing country */}
+                        {/* publishing country */}
                         <div className="col-span-6">
                             <FormField
                                 control={form.control}
@@ -916,7 +952,7 @@ export default function Create() {
                                 )}
                             />
                         </div>
-                         {/* people */}
+                        {/* people */}
                         <div className="col-span-6">
                             <FormField
                                 control={form.control}
@@ -926,7 +962,7 @@ export default function Create() {
                                         <FormLabel>{t('People')}</FormLabel>
                                         <div className="flex items-center gap-2">
                                             <Popover className="flex-grow">
-                                               <PopoverTrigger asChild>
+                                                <PopoverTrigger asChild>
                                                     <FormControl>
                                                         <Button
                                                             variant="outline"
@@ -936,7 +972,7 @@ export default function Create() {
                                                             {field.value
                                                                 ? (() => {
                                                                       const person = people?.find((c) => c.id == field.value);
-                                                                      return person ? `${person.name}` : 'name';
+                                                                      return person ? `${person.name}` : '';
                                                                   })()
                                                                 : t('Select person')}
                                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -960,7 +996,7 @@ export default function Create() {
                                                                 </CommandItem>
                                                                 {people?.map((person) => (
                                                                     <CommandItem
-                                                                        value={person.type}
+                                                                        value={person.name}
                                                                         key={person.id}
                                                                         onSelect={() => form.setValue('people_id', person.id.toString())}
                                                                     >
@@ -981,7 +1017,7 @@ export default function Create() {
                                             {hasPermission('post create') && <AddNewButtonNewPeople />}
                                         </div>
                                         <FormDescription>{t('Select the person where this post will show.')}</FormDescription>
-                                        <FormMessage>{errors.publishing_countries_code && <div>{errors.publishing_countries_code}</div>}</FormMessage>
+                                        <FormMessage>{errors.people_id && <div>{errors.people_id}</div>}</FormMessage>
                                     </FormItem>
                                 )}
                             />
@@ -1056,7 +1092,7 @@ export default function Create() {
                         name="files"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>{t('Upload File')}</FormLabel>
+                                <FormLabel>{t('Upload Files')}</FormLabel>
                                 <FormControl>
                                     <FileUploader
                                         value={attachmentFiles}
@@ -1139,6 +1175,62 @@ export default function Create() {
                             </FormItem>
                         )}
                     />
+                    <div className="grid grid-cols-6 gap-4 lg:grid-cols-12">
+                        <div className="col-span-6">
+                            <FormField
+                                control={form.control}
+                                name="file_status"
+                                render={({ field }) => (
+                                    <FormItem key={field.value}>
+                                        <FormLabel> {t('Files Status')}</FormLabel>
+                                        <Select key={field.value} onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select File Status" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="private">
+                                                    <LockIcon /> Private
+                                                </SelectItem>
+                                                <SelectItem value="public">
+                                                    <UnlockIcon /> Public
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage>{errors.file_status && <div>{errors.file_status}</div>}</FormMessage>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className="col-span-6">
+                            <FormField
+                                control={form.control}
+                                name="verify_status"
+                                render={({ field }) => (
+                                    <FormItem key={field.value}>
+                                        <FormLabel> {t('Verify Status')}</FormLabel>
+                                        <Select key={field.value} onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select Verify Status" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="verify">
+                                                    <BadgeCheck /> Verify
+                                                </SelectItem>
+                                                <SelectItem value="unverify">
+                                                    <BadgeX /> Unverify
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage>{errors.verify_status && <div>{errors.verify_status}</div>}</FormMessage>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                    </div>
                     {/* Start Long Description */}
                     <div key={editorKey} className="space-y-8">
                         <div>

@@ -40,6 +40,10 @@ class Post extends Model
     {
         return $this->belongsTo(People::class, 'people_id', 'id');
     }
+    public function person()
+{
+    return $this->belongsTo(People::class, 'people_id', 'id');
+}
 
      public function publisher()
     {

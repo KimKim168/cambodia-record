@@ -170,12 +170,12 @@ export function AppSidebar() {
             icon: FilePenLineIcon,
             url: '/admin/posts',
         },
-        {
-            title: t('Subjects'),
-            permission: 'post view',
-            icon: BookOpenText,
-            url: '/admin/post_subjects',
-        },
+        // {
+        //     title: t('Subjects'),
+        //     permission: 'post view',
+        //     icon: BookOpenText,
+        //     url: '/admin/post_subjects',
+        // },
         {
             title: t('Creators'),
             permission: 'post view',

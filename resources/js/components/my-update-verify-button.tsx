@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import useTranslation from '@/hooks/use-translation';
 import { useForm } from '@inertiajs/react';
-import { LoaderIcon } from 'lucide-react';
+import { BadgeCheck, BadgeX, LoaderIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -15,8 +15,8 @@ interface UpdateStatusButtonProps {
 }
 
 const statusVariants: Record<string, string> = {
-    active: 'text-white hover:bg-green-600/85 bg-blue-600',
-    inactive: 'text-white hover:bg-red-400/85 bg-red-400',
+    verify: 'text-white hover:bg-blue-600/85 bg-blue-600',
+    unverify: 'text-white hover:bg-yellow-500/85 bg-yellow-500',
     pending: 'text-white hover:bg-yellow-600/85 bg-yellow-600',
     public: 'text-white hover:bg-blue-500/85 bg-blue-500',
     private: 'text-white hover:bg-gray-500/85 bg-gray-500',
@@ -24,8 +24,8 @@ const statusVariants: Record<string, string> = {
     subscribe: 'text-white hover:bg-red-500/85 bg-red-500',
 };
 const statusVariantsText: Record<string, string> = {
-    active: 'text-green-600',
-    inactive: 'text-red-400',
+    verify: 'text-blue-600',
+    unverify: 'text-yellow-500',
     pending: 'text-yellow-600',
     public: 'text-blue-500',
     private: 'text-gray-500',
@@ -33,14 +33,15 @@ const statusVariantsText: Record<string, string> = {
     subscribe: 'text-red-500',
 };
 
-const MyUpdateStatusButton = ({ id, pathName, currentStatus, statuses }: UpdateStatusButtonProps) => {
+const MyUpdateVerifyButton = ({ id, pathName, currentStatus, statuses }: UpdateStatusButtonProps) => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const { post, data, processing, errors } = useForm();
 
     const handleChangeStatus = (status: string) => {
-        data.status = status;
-        post(`${pathName}/${id}/update_status`, {
+        // console.log(status);
+        data.verify_status = status;
+        post(`${pathName}/${id}/update_verify_status`, {
             preserveScroll: true,
             onSuccess: (page) => {
                 if (page.props.flash?.success) {
@@ -63,13 +64,20 @@ const MyUpdateStatusButton = ({ id, pathName, currentStatus, statuses }: UpdateS
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <DialogTrigger className="cursor-pointer" asChild>
-                            <Button variant="outline" className={`${statusVariantsText[currentStatus]} capitalize`} size="sm">
-                                {currentStatus}
+                            {currentStatus == 'unverify' ? (<Button variant="outline" className={`${statusVariantsText[currentStatus]} capitalize`} size="sm">
+                               <BadgeX /> {currentStatus}
+                            </Button>):(
+                                <Button variant="outline" className={`${statusVariantsText[currentStatus]} capitalize`} size="sm">
+                                <BadgeCheck/>{currentStatus}
                             </Button>
+                            )}
+                            {/* <Button variant="outline" className={`${statusVariantsText[currentStatus]} capitalize`} size="sm">
+                                {currentStatus}
+                            </Button> */}
                         </DialogTrigger>
                     </TooltipTrigger>
                     <TooltipContent side="left">
-                        <p>{t('Update Status')}</p>
+                        <p>{t('Update Verify Status')}</p>
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
@@ -107,4 +115,4 @@ const MyUpdateStatusButton = ({ id, pathName, currentStatus, statuses }: UpdateS
     );
 };
 
-export default MyUpdateStatusButton;
+export default MyUpdateVerifyButton;

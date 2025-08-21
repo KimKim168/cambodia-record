@@ -56,7 +56,13 @@ class CambodiaRecordController extends Controller
 
     public function post(Request $request)
     {
-        // 1. Fetch all data needed for the filters upfront.
+        $perPage = $request->input('perPage', 25);
+        $search = $request->query('search');
+        $category_code = $request->query('category_code');
+        $type = $request->query('type');
+        $year = $request->query('year');
+        $publisher_id = $request->query('publisher_id');
+
         $types = Type::where('status', 'active')->orderBy('id', 'desc')->get();
         $publishers = Publisher::where('status', 'active')->orderBy('id', 'desc')->get();
         $categories = PostCategory::where('status', 'active')->orderBy('order_index')->get();
@@ -65,14 +71,6 @@ class CambodiaRecordController extends Controller
             ->distinct()
             ->orderBy('year', 'desc')
             ->pluck('year');
-
-        // 2. Get all possible filter parameters from the request.
-        $perPage = $request->input('perPage', 25);
-        $search = $request->query('search');
-        $category_code = $request->query('category_code');
-        $type = $request->query('type');
-        $year = $request->query('year');
-        $publisher_id = $request->query('publisher_id');
 
         // 3. Start building the query.
         $query = Post::with('images', 'category', 'creator', 'upload_file')
@@ -91,9 +89,22 @@ class CambodiaRecordController extends Controller
 
         if ($search) {
             $query->where(function ($sub_query) use ($search) {
-                $sub_query->where('title', 'LIKE', "%{$search}%");
-                // Optionally add more fields
-                // ->orWhere('description', 'LIKE', "%{$search}%");
+                $sub_query->where('title', 'LIKE', "%{$search}%")
+                    ->orWhereHas('creator', function ($q) use ($search) {
+                        $q->where('name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('publisher', function ($q) use ($search) {
+                        $q->where('name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('location', function ($q) use ($search) {
+                        $q->where('location_name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('publishing_country', function ($q) use ($search) {
+                        $q->where('name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('topic', function ($q) use ($search) {
+                        $q->where('topic_name', 'LIKE', "%{$search}%");
+                    });
             });
         }
 
@@ -128,7 +139,7 @@ class CambodiaRecordController extends Controller
     {
         $postCategories = PostCategory::where('status', 'active')->orderBy('order_index')->get();
         $query = Post::query();
-        $query->with(['images', 'category', 'creator', 'publisher', 'publishing_country', 'upload_file', ]);
+        $query->with(['images', 'category', 'creator', 'publisher', 'publishing_country', 'upload_file', 'people', 'location', 'topic']);
         $post = $query->find($id);
         $relatedPosts = Post::with('category', 'images')->where('id', '!=', $id)->where('category_code', $post->category_code)->orderBy('id', 'desc')->limit(6)->get();
         // return $post;

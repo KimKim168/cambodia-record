@@ -63,7 +63,7 @@ class PostController extends Controller implements HasMiddleware
         $tableData = $query->paginate(perPage: 10)->onEachSide(1);
 
         $People = People::where(['status' => 'active'])->orderBy('id', 'desc')->get();
-        // return $People;
+        // return $tableData;
         return Inertia::render('admin/posts/Index', [
             'tableData' => $tableData,
         ]);
@@ -93,6 +93,7 @@ class PostController extends Controller implements HasMiddleware
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'post_date' => 'required|date',
+            'publishing_date' => 'required|date',
             'title_kh' => 'nullable|string|max:255',
             'short_description' => 'nullable|string|max:500',
             'short_description_kh' => 'nullable|string|max:500',
@@ -104,12 +105,15 @@ class PostController extends Controller implements HasMiddleware
             'publishing_countries_code' => 'nullable|string',
             'creator_id' => 'nullable|numeric',
             'publisher_id' => 'nullable|numeric',
+            'topic_id' => 'nullable|numeric',
+            'location_id' => 'nullable|numeric',
             'subject_id' => 'nullable|numeric',
             'type' => 'nullable|string',
             'people_id' => 'nullable|numeric',
             'year' => 'nullable|string',
             'status' => 'nullable|string|in:active,inactive',
             'file_status' => 'nullable|string|in:public,private',
+            'verify_status' => 'nullable|string|in:unverify,verify',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp,svg,webp|max:2048',
             'files' => 'nullable|array',
@@ -122,6 +126,7 @@ class PostController extends Controller implements HasMiddleware
         $postData['created_by'] = $request->user()->id;
         $postData['updated_by'] = $request->user()->id;
         $postData['post_date'] = Carbon::parse($validated['post_date'])->setTimezone('Asia/Bangkok')->startOfDay()->toDateString();
+        $postData['publishing_date'] = Carbon::parse($validated['publishing_date'])->setTimezone('Asia/Bangkok')->startOfDay()->toDateString();
 
         foreach ($postData as $key => $value) {
             if ($value === '') {
@@ -196,7 +201,7 @@ class PostController extends Controller implements HasMiddleware
             'publishingCountry' => PublishingCountry::where('status', 'active')->orderBy('id', 'desc')->get(),
             'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
             'typePeople' => Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id', 'desc')->get(),
-            // 'people' => People::where(['status' => 'active'])->orderBy('id', 'desc')->get(),
+            'people' => People::where(['status' => 'active'])->orderBy('id', 'desc')->get(),
         ]);
     }
 
@@ -208,6 +213,7 @@ class PostController extends Controller implements HasMiddleware
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'post_date' => 'nullable|date',
+            'publishing_date' => 'nullable|date',
             'title_kh' => 'nullable|string|max:255',
             'short_description' => 'nullable|string|max:500',
             'short_description_kh' => 'nullable|string|max:500',
@@ -219,12 +225,15 @@ class PostController extends Controller implements HasMiddleware
             'publishing_countries_code' => 'nullable|string',
             'creator_id' => 'nullable|numeric',
             'publisher_id' => 'nullable|numeric',
+            'topic_id' => 'nullable|numeric',
+            'location_id' => 'nullable|numeric',
             'subject_id' => 'nullable|numeric',
             'people_id' => 'nullable|numeric',
             'type' => 'nullable|string',
             'year' => 'nullable|string',
             'status' => 'nullable|string|in:active,inactive',
-            'file_status' => 'nullable|string|in:public,private',
+            'file_status' => 'nullable|string|in:private,public',
+            'verify_status' => 'nullable|string|in:unverify,verify',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp,svg,webp|max:2048',
             'files' => 'nullable|array',
@@ -238,6 +247,12 @@ class PostController extends Controller implements HasMiddleware
         if ($request->post_date) {
             $postData['post_date'] = Carbon::parse($validated['post_date'])->setTimezone('Asia/Bangkok')->startOfDay()->toDateString();
         }
+
+        $postData['updated_by'] = $request->user()->id;
+        if ($request->publishing_date) {
+            $postData['publishing_date'] = Carbon::parse($validated['publishing_date'])->setTimezone('Asia/Bangkok')->startOfDay()->toDateString();
+        }
+        
 
         foreach ($postData as $key => $value) {
             if ($value === '') {
@@ -378,6 +393,18 @@ class PostController extends Controller implements HasMiddleware
         ]);
 
         return redirect()->back()->with('success', 'Status updated successfully!');
+    }
+
+     public function update_verify_status(Request $request, Post $post)
+    {
+        $request->validate([
+            'verify_status' => 'required|string|in:unverify,verify',
+        ]);
+        $post->update([
+            'verify_status' => $request->verify_status,
+        ]);
+
+        return redirect()->back()->with('success', 'Verify status updated successfully!');
     }
 
     public function update_file_status(Request $request, Post $post)

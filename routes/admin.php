@@ -86,6 +86,7 @@ Route::middleware('auth')->group(function () {
     // Route::post('admin/posts/{post}/update', [PostController::class, 'update']);
     Route::post('admin/posts/{post}', [PostController::class, 'update'])->name('admin.posts.update');
     Route::post('admin/posts/{post}/update_status', [PostController::class, 'update_status']);
+    Route::post('admin/posts/{post}/update_verify_status', [PostController::class, 'update_verify_status']);
     Route::delete('admin/posts/images/{image}', [PostController::class, 'destroy_image']);
     Route::delete('admin/posts/upload_file/{file}', [PostController::class, 'destroy_upload_file']);
     Route::post('admin/posts/upload_file/{post}/update_file_status', [PostController::class, 'update_file_status']);
