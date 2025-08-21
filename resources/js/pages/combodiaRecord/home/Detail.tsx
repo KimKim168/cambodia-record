@@ -53,6 +53,9 @@ const Detail = () => {
                                     <span className="text-base leading-relaxed">Publishing Date :</span> {formatDate(post?.publishing_date)}
                                 </li>
                                 <li>
+                                    <span className="text-base leading-relaxed">Link :</span><a target='_blank' href={post?.link} className='text-blue-600 hover:underline'> {post?.link || 'N/A'}</a>
+                                </li>
+                                <li>
                                     {post?.verify_status == 'verify' ? (
                                         <span className="inline-flex items-center gap-1 text-base font-bold text-blue-600">
                                             <BadgeCheck className="h-5 w-5" />

@@ -12,15 +12,24 @@ const CambodiaRecord = () => {
     const { tableData } = usePage().props;
     return (
          <StyledWrapper className="font-kantumruy mx-auto grid max-w-screen-xl grid-cols-1 gap-4 px-4 sm:grid-cols-2 md:grid-cols-3 xl:px-0">
-                {tableData?.data?.map((item) => (
+                {tableData?.data?.map((item) => {
+                    const postDate = item?.post_date
+                        ? new Date(item.post_date).toLocaleDateString('en-US', {
+                              month: 'long', // full month name
+                              day: 'numeric', // day number
+                              year: 'numeric', // full year
+                          })
+                        : 'N/A';
+                    return (
                     <a href={`/posts/${item.id}`} key={item.id} className="card">
                     <img src={`/assets/images/posts/${item?.images?.[0]?.image}`} alt={item.title} className="card__hero" />
                     <footer className="card__footer">
                         <p className="card__job-title text-start line-clamp-2">{item.title}</p>
                         <button className="card__btn">Details</button>
                     </footer>
-                </a>
-                ))}
+                    <p className='text-gray-500 text-start'>Post date: {postDate}</p>
+                </a>)
+})}
         </StyledWrapper>  
     );
 };
