@@ -141,7 +141,7 @@ class CambodiaRecordController extends Controller
     {
         $postCategories = PostCategory::where('status', 'active')->orderBy('order_index')->get();
         $query = Post::query();
-        $query->with(['images', 'category', 'creator', 'publisher', 'publishing_country', 'upload_file', 'types', 'locations', 'topics', 'peoples','creators']);
+        $query->with(['images', 'category', 'creator', 'publisher', 'publishing_country', 'upload_file', 'types', 'locations', 'topics', 'peoples','creators','discourse']);
         $post = $query->find($id);
         $relatedPosts = Post::with('category', 'images')->where('id', '!=', $id)->where('category_code', $post->category_code)->orderBy('id', 'desc')->limit(6)->get();
         // return $post;
