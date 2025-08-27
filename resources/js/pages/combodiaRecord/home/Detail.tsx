@@ -2,9 +2,9 @@
 import { usePage } from '@inertiajs/react';
 import { BadgeCheck, BadgeXIcon, Paperclip } from 'lucide-react';
 import MyMiltiImages from '../components/my-milti-images';
+import MyReadMore from '../components/my-read-more';
 import PostRelated from '../components/post-related';
 import CamboLayout from '../layout/CamboLayout';
-import MyReadMore from '../components/my-read-more';
 
 const Detail = () => {
     const { post, relatedPosts, auth } = usePage<any>().props;
@@ -51,7 +51,15 @@ const Detail = () => {
                                 <li className="flex items-center gap-2">
                                     <strong className="block text-gray-700 dark:text-gray-200">Discourse:</strong>
                                     <div className="mt-1 flex flex-wrap gap-2">
-                                        <p className="rounded-full bg-red-100 px-2 py-1 text-xs text-gray-700 dark:bg-gray-800 dark:text-red-200">{post?.discourse?.name || 'N/A'}</p>
+                                        {post?.discourse?.name ? (
+                                            <p className="rounded-full bg-red-100 px-2 py-1 text-xs text-gray-700 dark:bg-gray-800 dark:text-red-200">
+                                                {post.discourse.name}
+                                            </p>
+                                        ) : (
+                                            <p className=" text-gray-500">
+                                                N/A
+                                            </p>
+                                        )}
                                     </div>
                                 </li>
 
@@ -191,7 +199,7 @@ const Detail = () => {
                                     </div>
                                 </li>
                                 <li>
-                                    <MyReadMore longDescription={post?.long_description}/>
+                                    <MyReadMore longDescription={post?.long_description} />
                                 </li>
                             </ul>
                         </div>
