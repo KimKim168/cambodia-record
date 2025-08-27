@@ -19,6 +19,7 @@ import {
     ListTodoIcon,
     MailsIcon,
     MapPin,
+    MessageCircleQuestion,
     NotebookPen,
     Pencil,
     ReplaceAllIcon,
@@ -170,12 +171,12 @@ export function AppSidebar() {
             icon: FilePenLineIcon,
             url: '/admin/posts',
         },
-        // {
-        //     title: t('Subjects'),
-        //     permission: 'post view',
-        //     icon: BookOpenText,
-        //     url: '/admin/post_subjects',
-        // },
+        {
+            title: t('Discourses'),
+            permission: 'post view',
+            icon: MessageCircleQuestion,
+            url: '/admin/post_discourses',
+        },
         {
             title: t('Creators'),
             permission: 'post view',

@@ -16,17 +16,22 @@ class Post extends Model
         return $this->belongsTo(PostCategory::class, 'category_code', 'code');
     }
 
-     public function creator()
+    public function creator()
     {
         return $this->belongsTo(Creator::class, 'creator_id', 'id');
     }
 
-     public function location()
+    public function location()
     {
         return $this->belongsTo(Location::class, 'location_id', 'id');
     }
 
-     public function topic()
+    public function discourse()
+    {
+        return $this->belongsTo(Discourse::class, 'discourse_id', 'id');
+    }
+
+    public function topic()
     {
         return $this->belongsTo(Topic::class, 'topic_id', 'id');
     }
@@ -36,22 +41,22 @@ class Post extends Model
         return $this->belongsTo(Subject::class, 'subject_id', 'id');
     }
 
-     public function people()
+    public function people()
     {
         return $this->belongsTo(People::class, 'people_id', 'id');
     }
     public function person()
-{
-    return $this->belongsTo(People::class, 'people_id', 'id');
-}
+    {
+        return $this->belongsTo(People::class, 'people_id', 'id');
+    }
 
-     public function publisher()
+    public function publisher()
     {
         return $this->belongsTo(Publisher::class, 'publisher_id', 'id');
     }
-     public function publishing_country()
+    public function publishing_country()
     {
-        return $this->belongsTo(PublishingCountry::class,'publishing_countries_code', 'code');
+        return $this->belongsTo(PublishingCountry::class, 'publishing_countries_code', 'code');
     }
     public function source_detail()
     {
@@ -68,6 +73,30 @@ class Post extends Model
     public function images()
     {
         return $this->hasMany(PostImage::class, 'post_id', 'id');
+    }
+    public function topics()
+    {
+        return $this->belongsToMany(Topic::class, 'post_topic_link', 'post_id', 'topic_id');
+    }
+
+    public function locations()
+    {
+        return $this->belongsToMany(Location::class, 'post_location_link', 'post_id', 'location_id');
+    }
+
+    public function peoples()
+    {
+        return $this->belongsToMany(People::class, 'post_people_link', 'post_id', 'person_id');
+    }
+
+    public function creators()
+    {
+        return $this->belongsToMany(Creator::class, 'post_creator_link', 'post_id', 'creator_id');
+    }
+
+     public function types()
+    {
+        return $this->belongsToMany(Type::class, 'post_type_link', 'post_id', 'type_id');
     }
     public function upload_file()
     {

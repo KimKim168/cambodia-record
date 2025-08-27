@@ -9,6 +9,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CreatorController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DiscourseController;
 use App\Http\Controllers\GarageController;
 use App\Http\Controllers\GaragePostController;
 use App\Http\Controllers\DtcController;
@@ -220,6 +221,12 @@ Route::middleware('auth')->group(function () {
     Route::post('admin/post_locations/{post_location}/update', [LocationController::class, 'update']);
     Route::get('admin/all_post_locations', [LocationController::class, 'all_post_locations']);
     Route::post('admin/post_locations/{post_location}/update_status', [LocationController::class, 'update_status']);
+
+    // Post Discourse Route
+    Route::resource('admin/post_discourses', DiscourseController::class);
+    Route::post('admin/post_discourses/{post_discourse}/update', [DiscourseController::class, 'update']);
+    Route::get('admin/all_post_discourses', [DiscourseController::class, 'all_post_discourses']);
+    Route::post('admin/post_discourses/{post_discourse}/update_status', [DiscourseController::class, 'update_status']);
     
     // Post topic Route
     Route::resource('admin/post_topics', TopicController::class);

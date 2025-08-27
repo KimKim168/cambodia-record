@@ -35,12 +35,12 @@ class CambodiaRecordController extends Controller
             ->orderBy('year', 'desc')
             ->pluck('year');
 
-        $tableData = Post::with('images', 'category', 'creator', 'upload_file')
+        $tableData = Post::with('images', 'category', 'upload_file', 'types', 'locations', 'topics', 'peoples','creators')
             ->where('status', 'active')
             ->orderBy('id', 'desc')
             ->paginate(6)
             ->onEachSide(1);
-        // return $typePeople;
+        // return $tableData;
         return Inertia::render('combodiaRecord/home/Index', [
             'tableData' => $tableData,
             'categoriesByOrderIndex' => $categoriesByOrderIndex,
@@ -137,12 +137,11 @@ class CambodiaRecordController extends Controller
     }
 
 
-
     public function detail($id, Request $request)
     {
         $postCategories = PostCategory::where('status', 'active')->orderBy('order_index')->get();
         $query = Post::query();
-        $query->with(['images', 'category', 'creator', 'publisher', 'publishing_country', 'upload_file', 'people', 'location', 'topic']);
+        $query->with(['images', 'category', 'creator', 'publisher', 'publishing_country', 'upload_file', 'types', 'locations', 'topics', 'peoples','creators']);
         $post = $query->find($id);
         $relatedPosts = Post::with('category', 'images')->where('id', '!=', $id)->where('category_code', $post->category_code)->orderBy('id', 'desc')->limit(6)->get();
         // return $post;

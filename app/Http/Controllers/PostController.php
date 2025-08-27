@@ -5,12 +5,18 @@ namespace App\Http\Controllers;
 use App\Helpers\ImageHelper;
 use App\Helpers\FileHelper;
 use App\Models\Creator;
+use App\Models\Discourse;
 use App\Models\Link;
 use App\Models\Location;
 use App\Models\People;
 use App\Models\Post;
 use App\Models\PostCategory;
+use App\Models\PostCreatorLink;
 use App\Models\PostImage;
+use App\Models\PostLocationLink;
+use App\Models\PostPeopleLink;
+use App\Models\PostTopicLink;
+use App\Models\PostTypeLink;
 use App\Models\Publisher;
 use App\Models\PublishingCountry;
 use App\Models\Type;
@@ -71,17 +77,20 @@ class PostController extends Controller implements HasMiddleware
 
     public function create(Request $request)
     {
+        $types = Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get();
+        // return ($types->all());
         return Inertia::render('admin/posts/Create', [
             'links' => Link::orderBy('title')->where('status', 'active')->get(),
             'postCategories' => PostCategory::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postCreators' => Creator::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postLocations' => Location::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postDiscourses' => Discourse::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postTopics' => Topic::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPeople' => People::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postSubjects' => Subject::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPublishers' => Publisher::where('status', 'active')->orderBy('id', 'desc')->get(),
             'publishingCountry' => PublishingCountry::where('status', 'active')->orderBy('id', 'desc')->get(),
-            'types' => Type::where(['status' => 'active', 'type_of' => 'post'])->orderBy('id', 'desc')->get(),
+            'types' => $types,
             'typePeople' => Type::where(['status' => 'active', 'type_of' => 'people'])->orderBy('id', 'desc')->get(),
             'people' => People::where(['status' => 'active'])->orderBy('id', 'desc')->get(),
         ]);
@@ -100,6 +109,7 @@ class PostController extends Controller implements HasMiddleware
             'long_description' => 'nullable|string',
             'long_description_kh' => 'nullable|string',
             'link' => 'nullable|string|max:255',
+            'web_link' => 'nullable|string|max:255',
             'source' => 'nullable|string|max:255',
             'category_code' => 'nullable|string',
             'publishing_countries_code' => 'nullable|string',
@@ -108,6 +118,7 @@ class PostController extends Controller implements HasMiddleware
             'topic_id' => 'nullable|numeric',
             'location_id' => 'nullable|numeric',
             'subject_id' => 'nullable|numeric',
+            'discourse_id' => 'nullable|numeric',
             'type' => 'nullable|string',
             'people_id' => 'nullable|numeric',
             'year' => 'nullable|string',
@@ -148,6 +159,74 @@ class PostController extends Controller implements HasMiddleware
                     }
                 }
 
+                // Save topics
+                $selectedTopics = $request->selected_topics ?? [];
+                if (count($selectedTopics) > 0) {
+                    foreach ($selectedTopics as $key => $topic) {
+                        PostTopicLink::create([
+                            'post_id' => $created_post->id,
+                            'topic_id' => $topic['value'],
+                        ]);
+                    }
+                }
+                // End Save topics
+
+                // --------------------------------------
+
+                // Save Location
+                $selectedLocations = $request->selected_locations ?? [];
+                if (count($selectedLocations) > 0) {
+                    foreach ($selectedLocations as $key => $location) {
+                        PostLocationLink::create([
+                            'post_id' => $created_post->id,
+                            'location_id' => $location['value'],
+                        ]);
+                    }
+                }
+                // End Save Location
+
+                // --------------------------------------
+
+                // Save People
+                $selectedPeople = $request->selected_people ?? [];
+                if (count($selectedPeople) > 0) {
+                    foreach ($selectedPeople as $key => $people) {
+                        PostPeopleLink::create([
+                            'post_id' => $created_post->id,
+                            'person_id' => $people['value'],
+                        ]);
+                    }
+                }
+                // End Save People
+
+                // --------------------------------------
+
+                // Save Creators
+                $selectedCreators = $request->selected_creators ?? [];
+                if (count($selectedCreators) > 0) {
+                    foreach ($selectedCreators as $key => $creators) {
+                        PostCreatorLink::create([
+                            'post_id' => $created_post->id,
+                            'creator_id' => $creators['value'],
+                        ]);
+                    }
+                }
+                // End Save Creators
+
+                // --------------------------------------
+
+                // Save Types
+                $selectedTypes = $request->selected_types ?? [];
+                if (count($selectedTypes) > 0) {
+                    foreach ($selectedTypes as $key => $types) {
+                        PostTypeLink::create([
+                            'post_id' => $created_post->id,
+                            'type_id' => $types['value'],
+                        ]);
+                    }
+                }
+                // End Save Types
+
                 if ($request->hasFile('files')) {
                     foreach ($request->file('files') as $attachmentFile) {
                         $created_file_name  = FileHelper::uploadFile($attachmentFile, 'assets/files/videos', true);
@@ -168,12 +247,15 @@ class PostController extends Controller implements HasMiddleware
 
     public function show(Post $post)
     {
+        $editData = $post->load('images', 'upload_file', 'topics', 'locations', 'peoples', 'creators');
+
         return Inertia::render('admin/posts/Create', [
             'links' => Link::orderBy('title')->where('status', 'active')->get(),
-            'editData' => $post->load('images', 'upload_file'),
+            'editData' => $editData,
             'postCategories' => PostCategory::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postCreators' => Creator::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPublishers' => Publisher::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postDiscourses' => Discourse::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postLocations' => Location::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postTopics' => Topic::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPeople' => People::where('status', 'active')->orderBy('id', 'desc')->get(),
@@ -188,12 +270,15 @@ class PostController extends Controller implements HasMiddleware
 
     public function edit(Post $post)
     {
+        $editData = $post->load('images', 'upload_file', 'topics', 'locations', 'peoples','creators','types');
+        // dd($editData);
         return Inertia::render('admin/posts/Create', [
             'links' => Link::orderBy('title')->where('status', 'active')->get(),
-            'editData' => $post->load('images', 'upload_file'),
+            'editData' => $editData,
             'postCategories' => PostCategory::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postCreators' => Creator::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPublishers' => Publisher::where('status', 'active')->orderBy('id', 'desc')->get(),
+            'postDiscourses' => Discourse::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postLocations' => Location::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postTopics' => Topic::where('status', 'active')->orderBy('id', 'desc')->get(),
             'postPeople' => People::where('status', 'active')->orderBy('id', 'desc')->get(),
@@ -208,7 +293,6 @@ class PostController extends Controller implements HasMiddleware
 
     public function update(Request $request, Post $post)
     {
-
         // dd($request->all());
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -220,6 +304,7 @@ class PostController extends Controller implements HasMiddleware
             'long_description' => 'nullable|string',
             'long_description_kh' => 'nullable|string',
             'link' => 'nullable|string|max:255',
+            'web_link' => 'nullable|string|max:255',
             'source' => 'nullable|string|max:255',
             'category_code' => 'nullable|string',
             'publishing_countries_code' => 'nullable|string',
@@ -228,6 +313,7 @@ class PostController extends Controller implements HasMiddleware
             'topic_id' => 'nullable|numeric',
             'location_id' => 'nullable|numeric',
             'subject_id' => 'nullable|numeric',
+            'discourse_id' => 'nullable|numeric',
             'people_id' => 'nullable|numeric',
             'type' => 'nullable|string',
             'year' => 'nullable|string',
@@ -252,7 +338,7 @@ class PostController extends Controller implements HasMiddleware
         if ($request->publishing_date) {
             $postData['publishing_date'] = Carbon::parse($validated['publishing_date'])->setTimezone('Asia/Bangkok')->startOfDay()->toDateString();
         }
-        
+
 
         foreach ($postData as $key => $value) {
             if ($value === '') {
@@ -275,6 +361,83 @@ class PostController extends Controller implements HasMiddleware
                         ]);
                     }
                 }
+
+                // ---------------------------------------------------
+
+                // Save topics
+                $selectedTopics = $request->selected_topics ?? [];
+                PostTopicLink::where('post_id', $post->id)->delete();
+                if (count($selectedTopics) > 0) {
+                    foreach ($selectedTopics as $key => $topic) {
+                        PostTopicLink::create([
+                            'post_id' => $post->id,
+                            'topic_id' => $topic['value'],
+                        ]);
+                    }
+                }
+                // End Save topics
+
+                // ---------------------------------------------------
+
+                // Save Location
+                $selectedLocations = $request->selected_locations ?? [];
+                PostLocationLink::where('post_id', $post->id)->delete();
+                if (count($selectedLocations) > 0) {
+                    foreach ($selectedLocations as $key => $location) {
+                        PostLocationLink::create([
+                            'post_id' => $post->id,
+                            'location_id' => $location['value'],
+                        ]);
+                    }
+                }
+                // End Save Location
+
+                // ---------------------------------------------------
+
+                // Save People
+                $selectedPeople = $request->selected_people ?? [];
+                PostPeopleLink::where('post_id', $post->id)->delete();
+                if (count($selectedPeople) > 0) {
+                    foreach ($selectedPeople as $key => $people) {
+                        PostPeopleLink::create([
+                            'post_id' => $post->id,
+                            'person_id' => $people['value'],
+                        ]);
+                    }
+                }
+                // End Save People
+
+                // ---------------------------------------------------
+
+                // Save Creators
+                $selectedCreators = $request->selected_creators ?? [];
+                PostCreatorLink::where('post_id', $post->id)->delete();
+                if (count($selectedCreators) > 0) {
+                    foreach ($selectedCreators as $key => $creators) {
+                        PostCreatorLink::create([
+                            'post_id' => $post->id,
+                            'creator_id' => $creators['value'],
+                        ]);
+                    }
+                }
+                // End Save Creators
+
+                // --------------------------------------
+
+                // Save Types
+                $selectedTypes = $request->selected_types ?? [];
+                PostTypeLink::where('post_id', $post->id)->delete();
+                if (count($selectedTypes) > 0) {
+                    foreach ($selectedTypes as $key => $types) {
+                        PostTypeLink::create([
+                            'post_id' => $post->id,
+                            'type_id' => $types['value'],
+                        ]);
+                    }
+                }
+                // End Save Types
+
+                // --------------------------------------
 
                 // Handle new attachment file uploads
                 if ($request->hasFile('files')) {
@@ -395,7 +558,7 @@ class PostController extends Controller implements HasMiddleware
         return redirect()->back()->with('success', 'Status updated successfully!');
     }
 
-     public function update_verify_status(Request $request, Post $post)
+    public function update_verify_status(Request $request, Post $post)
     {
         $request->validate([
             'verify_status' => 'required|string|in:unverify,verify',

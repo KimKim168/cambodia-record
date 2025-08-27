@@ -53,7 +53,7 @@ export default function Create({
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            location_name: editData?.location_name || '',
+            name: editData?.name || '',
             status: editData?.status || 'active',
         },
     });
@@ -70,7 +70,7 @@ export default function Create({
 
     function getParentsTableData() {
         axios
-            .get('/admin/all_post_locations')
+            .get('/admin/all_post_discourses')
             .then((response) => {
                 console.log(response.data);
                 setIsGettingParentsTableData(false);
@@ -96,7 +96,7 @@ export default function Create({
                 banner: filesBanner ? filesBanner[0] : null,
             }));
             if (editData?.id) {
-                post('/admin/post_locations/' + editData?.id + '/update', {
+                post('/admin/post_discourses/' + editData?.id + '/update', {
                     preserveScroll: true,
                     onSuccess: (page) => {
                         setFiles(null);
@@ -118,7 +118,7 @@ export default function Create({
                     },
                 });
             } else {
-                post('/admin/post_locations', {
+                post('/admin/post_discourses', {
                     preserveScroll: true,
                     onSuccess: (page) => {
                         form.reset();
@@ -157,14 +157,14 @@ export default function Create({
                     <div className="col-span-6">
                         <FormField
                             control={form.control}
-                            name="location_name"
+                            name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>{t('Location')}</FormLabel>
+                                    <FormLabel>{t('Title')}</FormLabel>
                                     <FormControl>
-                                        <Input placeholder={t("Location")} type="text" {...field} />
+                                        <Input placeholder={t("Title")} type="text" {...field} />
                                     </FormControl>
-                                    <FormMessage>{errors.location_name && <div>{errors.location_name}</div>}</FormMessage>
+                                    <FormMessage>{errors.name && <div>{errors.name}</div>}</FormMessage>
                                 </FormItem>
                             )}
                         />

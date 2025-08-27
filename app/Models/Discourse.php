@@ -2,16 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Type extends Model
+class Discourse extends Model
 {
-    /** @use HasFactory<\Database\Factories\TypeFactory> */
-    use HasFactory;
-
-    protected $guarded = [];
-
+    protected $guarded;
+    public $table = 'discourses';
     public function created_by()
     {
         return $this->belongsTo(User::class, 'created_by', 'id');
